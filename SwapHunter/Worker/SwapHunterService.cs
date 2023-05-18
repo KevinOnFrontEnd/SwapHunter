@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SwapHunter.Client;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 
 namespace SwapHunter.Worker
@@ -32,6 +33,16 @@ namespace SwapHunter.Worker
         {
           //fetch token pairs listed on the api
           var tokenPairs = await _tibetClient.GetTokenPairs();
+
+          //union knownTokens from github gist & tibetswap api tokens and take
+          //differences.
+          var newTokenPairs = tokenPairs.Where(x=> !tokenPairs.Any(y=>y.pair_id == x.pair_id)).ToList();
+          foreach(var pair in newTokenPairs)
+          {
+            Console.Beep();
+            Console.WriteLine($"New Pairs Detected");
+            Console.WriteLine($"{pair.short_name} - {pair.name}");
+          }
 
           //TODO:
           //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
