@@ -33,8 +33,12 @@ namespace SwapHunter.Worker
           //fetch token pairs listed on the api
           var tokenPairs = await _tibetClient.GetTokenPairs();
 
-          //Do something meaningful when new token is detected
-          //Looking into either Generating an offer file
+          //TODO:
+          //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
+          //Get From TibetSwapEndpoint for price (https://api.v2.tibetswap.io/pair/{pair}
+          //Post an amount to TibetSwap (https://api.v2.tibetswap.io/quote/8a47627f50869b310229455a7ed984c8384380ab810bd8ff4df3a6aded469c7d?amount_in=1000000000000&xch_is_input=true&estimate_fee=true)
+          //Generate Offer File (locally using chia wallet make_offer - location varies between OSes)
+          //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
 
           foreach (var pair in tokenPairs)
           {
