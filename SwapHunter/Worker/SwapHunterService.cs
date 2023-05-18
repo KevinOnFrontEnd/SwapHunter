@@ -45,7 +45,7 @@ namespace SwapHunter.Worker
             Console.WriteLine($"{pair.short_name} - {pair.name}");
           }
 
-          //wait arbitrary amount time so that we don't hammer tibetswaps api =)
+          //wait 10 mins arbitrary amount time before trying again. This is configurable.
           await Task.Delay(_tibetOptions.Value.TokenRefreshDelay);
         }
       }
