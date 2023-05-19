@@ -8,6 +8,8 @@ namespace SwapHunter.Client
 {
   public interface ITibetClient
   {
-    Task<List<TokensPair>> GetTokenPairs();
+    Task<List<Token>> GetTokenPairs();
+    Task<TokenPair> GetPair(string pair);
+    Task<Quote> GetQuote(string pair, string amount_in, bool xch_is_input = true, bool estimate_fee = true);
   }
 }

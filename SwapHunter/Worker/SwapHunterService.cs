@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SwapHunter.Client;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 
 namespace SwapHunter.Worker
@@ -28,33 +26,30 @@ namespace SwapHunter.Worker
       {
         //known token pairs
         var knownTokens = await GetLatestTokenPairGistFromGitHub();
+        var knownTokenshs = knownTokens.ToDictionary(x => x.pair_id);
 
         while (true)
         {
           //fetch token pairs listed on the api
           var tokenPairs = await _tibetClient.GetTokenPairs();
+          var apiPairs = tokenPairs.ToDictionary(x=>x.pair_id);
 
-          //union knownTokens from github gist & tibetswap api tokens and take
-          //differences.
-          var newTokenPairs = tokenPairs.Where(x=> !tokenPairs.Any(y=>y.pair_id == x.pair_id)).ToList();
-          foreach(var pair in newTokenPairs)
+          var newPairs = GetNewPairs(knownTokenshs, apiPairs);
+          foreach(var pair in newPairs)
           {
             Console.Beep();
             Console.WriteLine($"New Pairs Detected");
             Console.WriteLine($"{pair.short_name} - {pair.name}");
+
+            var item = await _tibetClient.GetPair(pair.pair_id);
+            Console.WriteLine(item.liquidity);
           }
 
           //TODO:
           //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
-          //Get From TibetSwapEndpoint for price (https://api.v2.tibetswap.io/pair/{pair}
-          //Post an amount to TibetSwap (https://api.v2.tibetswap.io/quote/8a47627f50869b310229455a7ed984c8384380ab810bd8ff4df3a6aded469c7d?amount_in=1000000000000&xch_is_input=true&estimate_fee=true)
           //Generate Offer File (locally using chia wallet make_offer - location varies between OSes)
           //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
 
-          foreach (var pair in tokenPairs)
-          {
-            Console.WriteLine($"{pair.short_name} - {pair.name}");
-          }
 
           //wait 10 mins arbitrary amount time before trying again. This is configurable.
           await Task.Delay(_tibetOptions.Value.TokenRefreshDelay);
@@ -66,12 +61,24 @@ namespace SwapHunter.Worker
       }
     }
 
+
+    private List<Token> GetNewPairs(Dictionary<string, Token> knownPairs, Dictionary<string, Token> apiPairs)
+    {
+      var newPairs = new List<Token>();
+      foreach (var item in apiPairs)
+      {
+        if (!knownPairs.ContainsKey(item.Key))
+          newPairs.Add(item.Value);
+      }
+      return newPairs;
+    }
+
     /// <summary>
     /// This method fetches the latest gist from github. It is used as the known list of tokens - 
     /// When there are subsequent tokens found when fetching from tibetswap - then they are new.
     /// </summary>
     /// <returns></returns>
-    private async Task<List<TokensPair>> GetLatestTokenPairGistFromGitHub()
+    private async Task<List<Token>> GetLatestTokenPairGistFromGitHub()
     {
       var client = new HttpClient();
       client.BaseAddress = new Uri("https://gist.githubusercontent.com/");
@@ -80,7 +87,7 @@ namespace SwapHunter.Worker
       string responseBody = await response.Content.ReadAsStringAsync();
       var obj = JsonObject.Parse(responseBody);
       var pairs = JArray.Parse(obj.ToString());
-      return pairs.ToObject<List<TokensPair>>();
+      return pairs.ToObject<List<Token>>();
     }
   }
 }
