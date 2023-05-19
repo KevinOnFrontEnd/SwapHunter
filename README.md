@@ -27,6 +27,7 @@ This application requires access to the wallet certificate & key in order to use
 - Post Generated Offer file to tibetswap api
 - Change amounts to mojos on api calls
 - Introduce whitelist for automatically making offers for tibetswap api.
+- Add Tests
 
 # Contributing
 Please feel free to contribute.
