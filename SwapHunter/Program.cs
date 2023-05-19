@@ -17,8 +17,10 @@ namespace SwapHunter
             .ConfigureServices((hostContext, services) =>
             {
               services.AddSingleton<ITibetClient, TibetClient>();
+              services.AddSingleton<IChiaRpcClient, ChiaRpcClient>();
               services.AddHostedService<SwapHunterService>();
               services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
+              services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
             });
   }
 }

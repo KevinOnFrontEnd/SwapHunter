@@ -12,12 +12,14 @@ namespace SwapHunter.Worker
     private ITibetClient _tibetClient { get; set; }
     private IOptions<TibetSwapOptions> _tibetOptions { get; set; }
     private IConfiguration _config;
+    private IChiaRpcClient _chiaRpcClient { get; set; }
 
-    public SwapHunterService(ITibetClient tibetclient, IOptions<TibetSwapOptions> tibetOptions, IConfiguration config)
+    public SwapHunterService(ITibetClient tibetclient, IOptions<TibetSwapOptions> tibetOptions, IConfiguration config, IChiaRpcClient chiaRpcClient)
     {
       _tibetClient = tibetclient;
       _tibetOptions = tibetOptions;
       _config = config;
+      _chiaRpcClient = chiaRpcClient;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,7 +49,7 @@ namespace SwapHunter.Worker
 
           //TODO:
           //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
-          //Generate Offer File (locally using chia wallet make_offer - location varies between OSes)
+          //Generate Offer File (locally using chia wallet make_offer - location varies between OSes) (WIP)
           //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
 
 
