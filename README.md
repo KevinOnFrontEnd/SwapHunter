@@ -10,8 +10,10 @@ With the chia ecosystem ramping up now that there is a AMM (TibetSwap), there wi
 
 This application requires access to the wallet certificate & key in order to use the chia wallet RPC to generate offer files. The following application settings (appsettings.json) need to be filled in before this application will function.
 
-`**"Wallet_key_path": "~/.chia/mainnet/config/ssl/wallet/private_wallet.key OR c:\Users\<YOURNAME>\chia\mainnet\config\ssl\wallet\private_wallet.key",**
- **"Wallet_cert_path": "~/.chia/mainnet/config/ssl/wallet/private_wallet.crt  OR c:\Users\<YOURNAME>\chia\mainnet\config\ssl\wallet\private_wallet.crt"**`
+```json
+"Wallet_key_path": "~/.chia/mainnet/config/ssl/wallet/private_wallet.key OR c:\Users\<YOURNAME>\chia\mainnet\config\ssl\wallet\private_wallet.key",
+"Wallet_cert_path": "~/.chia/mainnet/config/ssl/wallet/private_wallet.crt  OR c:\Users\<YOURNAME>\chia\mainnet\config\ssl\wallet\private_wallet.crt"
+ ```
 
 # Contributing
 Please feel free to contribute.
