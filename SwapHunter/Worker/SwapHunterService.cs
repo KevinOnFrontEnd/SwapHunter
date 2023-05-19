@@ -43,18 +43,17 @@ namespace SwapHunter.Worker
             Console.WriteLine($"New Pairs Detected");
             Console.WriteLine($"{pair.short_name} - {pair.name}");
             
-            //get quote
-            
-            var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, 100, 1, 100);
+            //TODO: get quote
+            //TODO: get configuration on how much to request.
+            var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, 100, -1, 100);
             if (offer.Success)
             {
+              //TODO:
               //either print to console/save file or post to tibetswap api
+              //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
+              //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
             }
           }
-
-          //TODO:
-          //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
-          //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
           
           //wait 10 mins arbitrary amount time before trying again. This is configurable.
           await Task.Delay(_tibetOptions.Value.TokenRefreshDelay);
