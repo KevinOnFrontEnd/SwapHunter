@@ -18,9 +18,14 @@ This application requires access to the wallet certificate & key in order to use
 # Contributing
 Please feel free to contribute.
 
+# Credit
+Loading keys/cert method was taken directly from https://github.com/dkackman/chia-dotnet/tree/main
+
 # TODO #
 - Logic that posts/gets offer data from TibetSwap api
-- Generate token offer using chia wallet make_offer (WIP using chia wallet RPC as of 19/05/2023)
+- Post Generated Offer file to tibetswap api
+- Change amounts to mojos on api calls
+- Introduce whitelist for automatically making offers for tibetswap api.
 
 # Disclaimer
 I take no responsibility for the use or misuse of any products, services, or information provided. It is the sole responsibility of the user to exercise their judgment and discretion when utilizing these resources. I do not accept liability for any damages, losses, or adverse consequences resulting from the use, interpretation, or reliance upon the materials provided. Users are encouraged to seek professional advice and exercise caution when applying the information or engaging in any activities related this program.
