@@ -14,6 +14,7 @@ This program will do the following when configured
 - Install Chia gui client https://www.chia.net/downloads/
 - Install dotnet core SDK/RunTime 7.0 https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 - Before running the application - chia must be running in order to communicate with chia wallet RPC to generate offers.
+- Review appSettings.json
 
 This application requires access to the wallet certificate & key in order to use the chia wallet RPC to generate offer files. The following application settings (appsettings.json) need to be **filled in before this application will function**.
 
