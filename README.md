@@ -37,5 +37,6 @@ Please feel free to contribute.
 # Disclaimer
 I take no responsibility for the use or misuse of any products, services, or information provided. It is the sole responsibility of the user to exercise their judgment and discretion when utilizing these resources. I do not accept liability for any damages, losses, or adverse consequences resulting from the use, interpretation, or reliance upon the materials provided. Users are encouraged to seek professional advice and exercise caution when applying the information or engaging in any activities related this program.
 
+# Build & Test Status
 ![Build](https://github.com/kevinonfrontend/swaphunter/actions/workflows/build_and_test.yml/badge.svg)
 
