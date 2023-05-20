@@ -23,9 +23,7 @@ This application requires access to the wallet certificate & key in order to use
  ```
 
 # TODO #
-- Logic that posts/gets offer data from TibetSwap api
 - Post Generated Offer file to tibetswap api
-- Change amounts to mojos on api calls
 - Introduce whitelist for automatically making offers for tibetswap api.
 - Add Tests
 
