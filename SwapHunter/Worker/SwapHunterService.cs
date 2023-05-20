@@ -45,17 +45,23 @@ namespace SwapHunter.Worker
             
             //TODO: Determine if this token is worth getting
             
-            var quote = await _tibetClient.GetQuote(pair.pair_id, "100");
-            if (quote != null)
+            //TBC
+            //intetionally can't get to this block of code until
+            //logic has been decided on which tokens/token amount has been decided.
+            if (true)
             {
-              var requestingTokenAmount = 100.0;
-              var xchAmount = ChiaHelper.ConvertToMojos(0.01);
-              var fee = ChiaHelper.ConvertToMojos(0.0001); //higher fee = faster transaction
-              var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, requestingTokenAmount, xchAmount, fee);
-              if (offer.Success)
+              var quote = await _tibetClient.GetQuote(pair.pair_id, "100");
+              if (quote != null)
               {
-                //TODO:
-                //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
+                var requestingTokenAmount = 100.0;
+                var xchAmount = ChiaHelper.ConvertToMojos(0.01);
+                var fee = ChiaHelper.ConvertToMojos(0.0001); //higher fee = faster transaction
+                var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, requestingTokenAmount, xchAmount, fee);
+                if (offer.Success)
+                {
+                  //TODO:
+                  //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
+                }
               }
             }
           }
