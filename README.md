@@ -1,5 +1,5 @@
 # swaphunter
-A console application for snooping new $xch tokens listed on TibetSwap.io
+A console application for snooping new $xch tokens listed on TibetSwap.io v2
 
 With the chia ecosystem ramping up now that there is a AMM (TibetSwap), there will be an influx in tokens that are listed on the exchange. This console application is intended to help users find new tokens available to trade as early as possible. 
 
