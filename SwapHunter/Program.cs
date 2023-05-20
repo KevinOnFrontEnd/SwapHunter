@@ -67,11 +67,11 @@ namespace SwapHunter
             .ConfigureServices((hostContext, services) =>
             {
               var chiaRpcOptions = hostContext.Configuration.GetSection("ChiaRpc").Get<ChiaRpcOptions>();
+              var tibetSwapOptions = hostContext.Configuration.GetSection("TibetSwap").Get<TibetSwapOptions>();
               var handler = new SocketsHttpHandler();
               handler.SslOptions.ClientCertificates = GetCerts(chiaRpcOptions.Wallet_cert_path, chiaRpcOptions.Wallet_key_path);
               handler.SslOptions.RemoteCertificateValidationCallback += ValidateServerCertificate;
               
-              services.AddSingleton<ITibetClient, TibetClient>();
               services.AddHttpClient<IChiaRpcClient, ChiaRpcClient>(c =>
               {
                 c.BaseAddress = new System.Uri(chiaRpcOptions.WalletRpcEndpoint);
@@ -80,7 +80,12 @@ namespace SwapHunter
                 return handler;
               });
 
-                services.AddHostedService<SwapHunterService>();
+              services.AddHttpClient<ITibetClient, TibetClient>(c =>
+              {
+                c.BaseAddress = new System.Uri(tibetSwapOptions.ApiEndpoint);
+              });
+
+              services.AddHostedService<SwapHunterService>();
               services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
               services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
             });

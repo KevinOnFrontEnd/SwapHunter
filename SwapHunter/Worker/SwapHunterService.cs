@@ -48,7 +48,7 @@ namespace SwapHunter.Worker
             //TBC
             //intetionally can't get to this block of code until
             //logic has been decided on which tokens/token amount has been decided.
-            if (true)
+            if (false)
             {
               var quote = await _tibetClient.GetQuote(pair.pair_id, "100");
               if (quote != null)

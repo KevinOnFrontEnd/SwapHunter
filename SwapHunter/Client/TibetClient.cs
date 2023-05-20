@@ -13,17 +13,17 @@ namespace SwapHunter.Client
   public class TibetClient : ITibetClient
   {
     private IOptions<TibetSwapOptions> _options;
+    private HttpClient _client { get; set; }
 
-    public TibetClient(IOptions<TibetSwapOptions> options) 
+    public TibetClient(IOptions<TibetSwapOptions> options, HttpClient httpClient) 
     { 
       _options = options;
+      _client = httpClient;
     }
 
     public async Task<TokenPair> GetPair(string pair)
     {
-      var client = new HttpClient();
-      client.BaseAddress = new Uri(_options.Value.ApiEndpoint);
-      var response = await client.GetAsync($"{_options.Value.TokenPairEndpoint}/{pair}");
+      var response = await _client.GetAsync($"{_options.Value.TokenPairEndpoint}/{pair}");
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
       var item = JsonConvert.DeserializeObject<TokenPair>(responseBody);
@@ -32,9 +32,7 @@ namespace SwapHunter.Client
 
     public async Task<Quote> GetQuote(string pair, string amount_in, bool xch_is_input = true, bool estimate_fee = true)
     {
-      var client = new HttpClient();
-      client.BaseAddress = new Uri(_options.Value.ApiEndpoint);
-      var response = await client.GetAsync($"{_options.Value.QuoteEndpoint}/{pair}?amount_in={amount_in}&xch_is_input={xch_is_input}&estimate_fee={estimate_fee}");
+      var response = await _client.GetAsync($"{_options.Value.QuoteEndpoint}/{pair}?amount_in={amount_in}&xch_is_input={xch_is_input}&estimate_fee={estimate_fee}");
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
       var quote = JsonConvert.DeserializeObject<Quote>(responseBody);
@@ -43,9 +41,7 @@ namespace SwapHunter.Client
 
     public async Task<List<Token>> GetTokenPairs()
     {
-      var client = new HttpClient();
-      client.BaseAddress = new Uri(_options.Value.ApiEndpoint);
-      var response = await client.GetAsync(_options.Value.TokensEndpoint);
+      var response = await _client.GetAsync(_options.Value.TokensEndpoint);
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
       List<Token> pairs = JsonConvert.DeserializeObject<List<Token>>(responseBody);
