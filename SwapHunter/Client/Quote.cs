@@ -8,12 +8,12 @@ namespace SwapHunter.Client
 {
   public class Quote
   {
-    string amount_in { get; set; }
-    string amount_out { get; set; }
-    string price_warning { get; set; }
-    string fee { get; set; }
-    string asset_id { get; set; }
-    string input_reserve { get; set; }
-    string output_reserve { get; set; }
+    public string amount_in { get; set; }
+    public string amount_out { get; set; }
+    public string price_warning { get; set; }
+    public string fee { get; set; }
+    public string asset_id { get; set; }
+    public string input_reserve { get; set; }
+    public string output_reserve { get; set; }
   }
 }

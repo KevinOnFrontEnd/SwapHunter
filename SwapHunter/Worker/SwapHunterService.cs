@@ -43,15 +43,20 @@ namespace SwapHunter.Worker
             Console.WriteLine($"New Pairs Detected");
             Console.WriteLine($"{pair.short_name} - {pair.name}");
             
-            //TODO: get quote
-            //TODO: get configuration on how much to request.
-            var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, 100, -1, 100);
-            if (offer.Success)
+            //TODO: Determine if this token is worth getting
+            
+            var quote = await _tibetClient.GetQuote(pair.pair_id, "100");
+            if (quote != null)
             {
-              //TODO:
-              //either print to console/save file or post to tibetswap api
-              //DETERMINE IF Token is worth buying (WhiteList of names? Supply?
-              //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
+              var requestingTokenAmount = 100.0;
+              var xchAmount = ChiaHelper.ConvertToMojos(0.01);
+              var fee = ChiaHelper.ConvertToMojos(0.0001); //higher fee = faster transaction
+              var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, requestingTokenAmount, xchAmount, fee);
+              if (offer.Success)
+              {
+                //TODO:
+                //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
+              }
             }
           }
           
@@ -64,8 +69,7 @@ namespace SwapHunter.Worker
         Console.WriteLine(e.ToString());
       }
     }
-
-
+    
     private List<Token> GetNewPairs(Dictionary<string, Token> knownPairs, Dictionary<string, Token> apiPairs)
     {
       var newPairs = new List<Token>();
