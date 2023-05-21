@@ -19,7 +19,7 @@ jobs:
         testnet: true
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
         keys: ${{ secrets.WALLET_KEY }}
-        TEST: ${{ secrets.TEST_SECRET }}
+        TEST: 'this is a test'
       ports:
       - 8444:8444
       
