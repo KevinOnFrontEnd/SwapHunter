@@ -10,7 +10,6 @@ on:
     branches: [ "main","add-chia-tests-git-workflow"]
 
   build:
-
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/chia-network/chia:latest
@@ -24,7 +23,7 @@ on:
     - name: Initialize Chia
       run: chia init
     - name: Import Test Wallet Using Seed
-      run: chia keys add ${{ build.WALLET_KEY }}
+      run: chia keys add ${{ secrets.WALLET_KEY }}
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
