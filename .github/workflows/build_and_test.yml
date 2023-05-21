@@ -35,6 +35,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
       
-
+    - name: Show chia wallet
+      run: chia keys show
     - name: Test
       run: dotnet test --no-build --verbosity normal
