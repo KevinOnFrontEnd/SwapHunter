@@ -25,7 +25,7 @@ jobs:
       
     steps:  
     - name: install icu components
-      run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https && sudo apt install -y libicu67
+      run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https && sudo apt install -y libicu67 && sudo apt install -y coreutils
     - name: Run chia init
       run:  chia init
     - uses: actions/checkout@v3
