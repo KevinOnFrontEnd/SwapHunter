@@ -5,9 +5,10 @@ name: build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main","add-chia-tests-git-workflow" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main","add-chia-tests-git-workflow"]
+" ]
 
 jobs:
   build:
