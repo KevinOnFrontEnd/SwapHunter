@@ -19,6 +19,7 @@ jobs:
         testnet: true
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
         keys: ${{ secrets.WALLET_KEY }}
+        TEST: ${{ secrets.TEST_SECRET }}
       ports:
       - 8444:8444
       
@@ -38,6 +39,6 @@ jobs:
       run: dotnet build --no-restore
       
     - name: Show chia wallet
-      run: chia keys show
+      run: echo $TEST
     - name: Test
       run: dotnet test --no-build --verbosity normal
