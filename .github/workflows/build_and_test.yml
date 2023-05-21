@@ -20,6 +20,7 @@ jobs:
         testnet: true
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
         keys: ${{ secrets.WALLET_KEY }}
+        TZ: 'Europe/London'
       ports:
       - 8444:8444
       
