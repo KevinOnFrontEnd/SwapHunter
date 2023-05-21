@@ -41,7 +41,7 @@ jobs:
     - name: Chia Init
       run: chia init  
     - name: Import Wallet
-      run: chia keys add -f ~/.env_key
+      run: chia keys add -f ~/.env_key -l IntegrationTestsWallet
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
