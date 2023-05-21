@@ -9,7 +9,6 @@ on:
   pull_request:
     branches: [ "main","add-chia-tests-git-workflow"]
 
-jobs:
   build:
 
     runs-on: ubuntu-latest
