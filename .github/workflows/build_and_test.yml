@@ -22,7 +22,9 @@ jobs:
       - 8444
       
     steps:
-    - name: Log the node version
+    - name: Initialize Chia
+      run: chia init
+    - name: Import Test Wallet Using Seed
       run: chia keys add
     - uses: actions/checkout@v3
     - name: Setup .NET
