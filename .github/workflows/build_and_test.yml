@@ -13,22 +13,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/chia-network/chia:latest
+      image: ghcr.io/chia-network/chia-simulator:latest
       env:
         testnet: true
-        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
+        mnemonic: ${{ secrets.WALLET_KEY }}
       ports:
       - 8444
       
-    steps:
-    - name: Initialize Chia
-      run: chia init
-    - name: Show test Secret
-      run: echo "$(secrets.TEST_SECRET}"
-    
-    - name: Import Test Wallet Using Seed
-      run: chia keys add ${{ secrets.WALLET_KEY }}
-      
+    steps:  
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
