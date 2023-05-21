@@ -38,7 +38,7 @@ jobs:
     - name: Chia Init
       run: chia init  
     - name: add walletss
-      run: chia keys add ${{ secrets.WALLET_KEY }}
+      run: chia keys add -l ${{ secrets.WALLET_KEY }}
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
