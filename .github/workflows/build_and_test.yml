@@ -24,7 +24,7 @@ jobs:
     - name: Initialize Chia
       run: chia init
     - name: Show test Secret
-      run: echo ${{ secrets.TEST_SECRET }}
+      run: echo "$(secrets.TEST_SECRET}"
     
     - name: Import Test Wallet Using Seed
       run: chia keys add ${{ secrets.WALLET_KEY }}
