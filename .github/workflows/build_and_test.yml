@@ -24,6 +24,8 @@ jobs:
       - 8444:8444
       
     steps:  
+    - name: Create env wallet
+      run: echo "${{secrets.WALLET_KEY}}" > ~/.env_key
     - name: install icu components
       run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https && sudo apt install -y libicu67 && sudo apt install -y coreutils
     - uses: actions/checkout@v3
@@ -37,8 +39,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Chia Init
       run: chia init  
-    - name: add walletss
-      run: chia keys add -l ${{ secrets.WALLET_KEY }}
+    - name: Import Wallet
+      run: chia keys add -f ~/.env_key
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
