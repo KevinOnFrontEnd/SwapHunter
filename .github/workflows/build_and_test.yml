@@ -20,15 +20,12 @@ jobs:
         testnet: true
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
         keys: ${{ secrets.WALLET_KEY }}
-        TEST: 'this is a test'
       ports:
       - 8444:8444
       
     steps:  
     - name: install icu components
       run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https && sudo apt install -y libicu67 && sudo apt install -y coreutils
-    - name: Run chia init
-      run:  chia init
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -40,6 +37,6 @@ jobs:
       run: dotnet build --no-restore
       
     - name: Show chia wallet
-      run: printenv
+      run: chia 
     - name: Test
       run: dotnet test --no-build --verbosity normal
