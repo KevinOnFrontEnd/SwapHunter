@@ -13,7 +13,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    container:
+      image: ghcr.io/chia-network/chia:latest
+      ports:
+      - 8444
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -24,5 +27,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+      
+
     - name: Test
       run: dotnet test --no-build --verbosity normal
