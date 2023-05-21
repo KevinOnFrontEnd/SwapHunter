@@ -13,13 +13,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/chia-network/chia-simulator:latest
+      image: ghcr.io/chia-network/chia:latest
       env:
         testnet: true
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
-        mnemonic: ${{ secrets.WALLET_KEY }}
       ports:
-      - 8555
+      - 8444:8444
       
     steps:  
     - uses: actions/checkout@v3
