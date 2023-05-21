@@ -4,6 +4,7 @@
 name: build
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main","add-chia-tests-git-workflow" ]
   pull_request:
