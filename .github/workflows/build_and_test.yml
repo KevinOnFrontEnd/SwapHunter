@@ -36,7 +36,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-      
+    - name: Chia Init
+      run: chia init  
     - name: Set Chia TestNet 
       run: chia configure -t true
     - name: Test
