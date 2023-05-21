@@ -25,7 +25,7 @@ jobs:
     - name: Initialize Chia
       run: chia init
     - name: Import Test Wallet Using Seed
-      run: chia keys add
+      run: chia keys add ${{ build.walley_key }}
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
