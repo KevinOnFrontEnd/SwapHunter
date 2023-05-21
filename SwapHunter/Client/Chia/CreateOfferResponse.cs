@@ -10,6 +10,9 @@ namespace SwapHunter.Client.Chia
   {
     public string Offer { get; set; }
     public bool Success { get; set; }
+    public string Error { get; set; }
+    
+    public double Spendable { set; get; }
     
   }
 }

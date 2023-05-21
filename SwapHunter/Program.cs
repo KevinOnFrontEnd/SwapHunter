@@ -7,10 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SwapHunter.Client;
 using SwapHunter.Worker;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace SwapHunter
 {
-  internal class Program
+  public class Program
   {
     static void Main(string[] args)
     {
@@ -88,6 +89,8 @@ namespace SwapHunter
               services.AddHostedService<SwapHunterService>();
               services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
               services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
+              
+
             });
   }
 }

@@ -29,7 +29,11 @@ This application requires access to the wallet certificate & key in order to use
 - Add Tests
 
 # Contributing
-Please feel free to contribute.
+Please feel free to contribute some TXCH. The tests in this project are integration tests that create real offers using a test wallet on the testnet. A few tests can easily tie up all the TXCH in the wallet.
+
+```json
+txch1mcgpakts9fqxfp3k45t89vpweue0ucn4mc34g2wpv6e8fk63p6vq7a60et
+```
 
 # Credit
 - Loading keys/cert method was taken directly from https://github.com/dkackman/chia-dotnet/tree/main

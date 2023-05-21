@@ -76,9 +76,9 @@ namespace SwapHunter.Worker
       }
     }
     
-    private List<Token> GetNewPairs(Dictionary<string, Token> knownPairs, Dictionary<string, Token> apiPairs)
+    private List<TokenResponse> GetNewPairs(Dictionary<string, TokenResponse> knownPairs, Dictionary<string, TokenResponse> apiPairs)
     {
-      var newPairs = new List<Token>();
+      var newPairs = new List<TokenResponse>();
       foreach (var item in apiPairs)
       {
         if (!knownPairs.ContainsKey(item.Key))
@@ -92,7 +92,7 @@ namespace SwapHunter.Worker
     /// When there are subsequent tokens found when fetching from tibetswap - then they are new.
     /// </summary>
     /// <returns></returns>
-    private async Task<List<Token>> GetLatestTokenPairGistFromGitHub()
+    private async Task<List<TokenResponse>> GetLatestTokenPairGistFromGitHub()
     {
       var client = new HttpClient();
       client.BaseAddress = new Uri("https://gist.githubusercontent.com/");
@@ -101,7 +101,7 @@ namespace SwapHunter.Worker
       string responseBody = await response.Content.ReadAsStringAsync();
       var obj = JsonObject.Parse(responseBody);
       var pairs = JArray.Parse(obj.ToString());
-      return pairs.ToObject<List<Token>>();
+      return pairs.ToObject<List<TokenResponse>>();
     }
   }
 }

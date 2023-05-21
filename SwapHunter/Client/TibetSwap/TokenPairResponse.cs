@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SwapHunter.Client
 {
-  public class TokenPair
+  public class TokenPairResponse
   {
     public string launcher_id { get; set; }
     public string asset_id { get; set; }
