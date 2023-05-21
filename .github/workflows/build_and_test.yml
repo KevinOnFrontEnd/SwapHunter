@@ -37,7 +37,7 @@ jobs:
       run: dotnet build --no-restore
     - name: Chia Init
       run: chia init  
-    - name: add wallets
+    - name: add walletss
       run: chia keys add ${{ secrets.WALLET_KEY }}
     - name: Test
       run: dotnet test --no-build --verbosity normal
