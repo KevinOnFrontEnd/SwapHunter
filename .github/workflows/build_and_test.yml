@@ -37,7 +37,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
       
-    - name: Show chia wallet
-      run: chia 
+    - name: Set Chia TestNet 
+      run: chia configure -t true
     - name: Test
       run: dotnet test --no-build --verbosity normal
