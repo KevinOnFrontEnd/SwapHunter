@@ -23,7 +23,7 @@ jobs:
       
     steps:  
     - name: install icu components
-      run: sudo apt install libicu63
+      run: sudo apt install icu
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
