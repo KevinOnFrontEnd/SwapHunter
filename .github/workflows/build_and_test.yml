@@ -19,7 +19,7 @@ jobs:
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
         mnemonic: ${{ secrets.WALLET_KEY }}
       ports:
-      - 8444
+      - 8555
       
     steps:  
     - uses: actions/checkout@v3
