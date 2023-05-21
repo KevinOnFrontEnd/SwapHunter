@@ -18,8 +18,7 @@ jobs:
       image: ghcr.io/chia-network/chia:latest
       env:
         testnet: true
-        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1,
-        keys: ${{ secrets.WALLET_KEY }}
+        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
         TZ: 'Europe/London'
       ports:
       - 8444:8444
@@ -38,8 +37,10 @@ jobs:
       run: dotnet build --no-restore
     - name: Chia Init
       run: chia init  
+    - name: add wallet
+      run: chia keys add ${{ secrets.WALLET_KEY }}
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
     - name: show where chia ssl cert is
-      run: ls ~/.chia
+      run: ls /root/.chia/
