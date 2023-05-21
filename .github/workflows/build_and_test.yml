@@ -23,7 +23,7 @@ jobs:
       
     steps:  
     - name: install icu components
-      run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https & sudo apt-get install -y libicu-dev
+      run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https & sudo apt-get install -y icu
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
