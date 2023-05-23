@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <UserSecretsId>5419be6f-66e7-4fb8-87b1-eab5ad98589d</UserSecretsId>
+    <UserSecretsId>SwapHunter</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
