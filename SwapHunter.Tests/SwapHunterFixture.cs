@@ -35,6 +35,7 @@ public class SwapHunterFixture : WebApplicationFactory<SwapHunter.Program>
                 configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
                 configurationBuilder.AddJsonFile("testingappsettings.json", optional: false);
                 configurationBuilder.AddEnvironmentVariables(prefix: "PREFIX_");
+                configurationBuilder.AddUserSecrets<SwapHunterFixture>(optional: true);
             });
         });
 

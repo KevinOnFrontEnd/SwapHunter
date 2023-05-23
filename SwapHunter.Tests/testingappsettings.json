@@ -3,7 +3,9 @@
     "ApiEndPoint": "https://api.v2-testnet10.tibetswap.io",
     "TokensEndpoint": "/tokens",
     "TokenPairEndpoint": "/pair",
-    "QuoteEndpoint": "/quote"
+    "QuoteEndpoint": "/quote",
+    "RouterEndpoint": "/router",
+    "TokenEndpoint": "/token"
   },
   "ChiaRpc": {
     "WalletRpcEndpoint": "https://127.0.0.1:9256",

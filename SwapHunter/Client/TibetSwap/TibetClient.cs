@@ -39,6 +39,30 @@ namespace SwapHunter.Client
       return quote;
     }
 
+    public Task<OfferResponse> CreateOffer(string pairId, string offer, double donationAmount, string action = "SWAP",
+      string[] donationAddresses = null, string[] donationWeights = null)
+    {
+      throw new NotImplementedException();
+    }
+
+    public async Task<RouterResponse> GetRouter()
+    {
+      var response = await _client.GetAsync($"{_options.Value.RouterEndpoint}");
+      response.EnsureSuccessStatusCode();
+      string responseBody = await response.Content.ReadAsStringAsync();
+      var router = JsonConvert.DeserializeObject<RouterResponse>(responseBody);
+      return router;
+    }
+
+    public async Task<TokenResponse> GetToken(string assetId)
+    {
+      var response = await _client.GetAsync($"{_options.Value.TokenEndpoint}/{assetId}");
+      response.EnsureSuccessStatusCode();
+      string responseBody = await response.Content.ReadAsStringAsync();
+      var token = JsonConvert.DeserializeObject<TokenResponse>(responseBody);
+      return token;
+    }
+
     public async Task<List<TokenResponse>> GetTokenPairs()
     {
       var response = await _client.GetAsync(_options.Value.TokensEndpoint);
