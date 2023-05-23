@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SwapHunter.Client;
 using System.Text.Json.Nodes;
+using SwapHunter.Client.Chia;
+using SwapHunter.Client.TibetSwap;
 
 namespace SwapHunter.Worker
 {
@@ -50,13 +52,13 @@ namespace SwapHunter.Worker
             //logic has been decided on which tokens/token amount has been decided.
             if (false)
             {
-              var quote = await _tibetClient.GetQuote(pair.pair_id, "100");
+              var quote = await _tibetClient.GetQuote(pair.pair_id, 1000);
               if (quote != null)
               {
                 var requestingTokenAmount = 100.0;
                 var xchAmount = ChiaHelper.ConvertToMojos(0.01);
                 var fee = ChiaHelper.ConvertToMojos(0.0001); //higher fee = faster transaction
-                var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, requestingTokenAmount, xchAmount, fee);
+                var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, requestingTokenAmount, xchAmount, fee,false);
                 if (offer.Success)
                 {
                   //TODO:

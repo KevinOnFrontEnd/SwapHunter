@@ -1,4 +1,4 @@
-namespace SwapHunter.Client;
+namespace SwapHunter.Client.TibetSwap;
 
 public class OfferResponse
 {
