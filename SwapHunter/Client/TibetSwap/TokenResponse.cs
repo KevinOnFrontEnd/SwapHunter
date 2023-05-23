@@ -1,6 +1,6 @@
 ﻿namespace SwapHunter.Client
 {
-  public class Token
+  public class TokenResponse
   {
     public string Asset_id { get; set; }
     public string pair_id { get; set; }

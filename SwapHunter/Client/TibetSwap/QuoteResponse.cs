@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SwapHunter.Client
 {
-  public class Quote
+  public class QuoteResponse
   {
     public string amount_in { get; set; }
     public string amount_out { get; set; }

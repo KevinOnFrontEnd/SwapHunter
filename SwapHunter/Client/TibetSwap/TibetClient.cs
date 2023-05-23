@@ -21,30 +21,30 @@ namespace SwapHunter.Client
       _client = httpClient;
     }
 
-    public async Task<TokenPair> GetPair(string pair)
+    public async Task<TokenPairResponse> GetPair(string pair)
     {
       var response = await _client.GetAsync($"{_options.Value.TokenPairEndpoint}/{pair}");
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
-      var item = JsonConvert.DeserializeObject<TokenPair>(responseBody);
+      var item = JsonConvert.DeserializeObject<TokenPairResponse>(responseBody);
       return item;
     }
 
-    public async Task<Quote> GetQuote(string pair, string amount_in, bool xch_is_input = true, bool estimate_fee = true)
+    public async Task<QuoteResponse> GetQuote(string pair, string amount_in, bool xch_is_input = true, bool estimate_fee = true)
     {
       var response = await _client.GetAsync($"{_options.Value.QuoteEndpoint}/{pair}?amount_in={amount_in}&xch_is_input={xch_is_input}&estimate_fee={estimate_fee}");
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
-      var quote = JsonConvert.DeserializeObject<Quote>(responseBody);
+      var quote = JsonConvert.DeserializeObject<QuoteResponse>(responseBody);
       return quote;
     }
 
-    public async Task<List<Token>> GetTokenPairs()
+    public async Task<List<TokenResponse>> GetTokenPairs()
     {
       var response = await _client.GetAsync(_options.Value.TokensEndpoint);
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
-      List<Token> pairs = JsonConvert.DeserializeObject<List<Token>>(responseBody);
+      List<TokenResponse> pairs = JsonConvert.DeserializeObject<List<TokenResponse>>(responseBody);
       return pairs;
     }
   }

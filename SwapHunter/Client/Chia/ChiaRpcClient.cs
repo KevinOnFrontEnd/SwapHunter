@@ -24,12 +24,15 @@ namespace SwapHunter.Client
       _client = httpClient;
     }
 
-    public async Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount_in_mojos, double xch_amount_in_mojos, double fee)
+    //get_sync_status
+    //add_token
+    
+    public async Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double xch_amount_in_mojos, double fee)
     {
       var obj =  new {
-        offer=new Dictionary<string,double>() {
-          { "1", -requesting_amount_in_mojos },
-          { assetid, xch_amount_in_mojos }
+        offer= new Dictionary<string,double>() {
+          { "1", -10000000000 },
+          { assetid, requesting_amount }
         },
         Fee=fee
       };
