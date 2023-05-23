@@ -14,9 +14,18 @@ This program will do the following when configured
 - Install Chia gui client https://www.chia.net/downloads/
 - Install dotnet core SDK/RunTime 7.0 https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 - Before running the application - chia must be running in order to communicate with chia wallet RPC to generate offers.
-- Review appSettings.json
+- Review AppSettings
 
 This application requires access to the wallet certificate & key in order to use the chia wallet RPC to generate offer files. The following application settings (appsettings.json) need to be **filled in before this application will function**.
+
+Initialize dotnet secrets for both SwapHunter.Tests & SwapHunter Projects 
+
+```
+dotnet user-secrets init --id SwapHunterTests
+dotnet user-secrets init --id SwapHunter
+```
+
+put the correct path to your wallet ssl key/cert.
 
 ```json
 "Wallet_key_path": "~/.chia/mainnet/config/ssl/wallet/private_wallet.key OR c:\\Users\\<YOURNAME>\\chia\\mainnet\\config\\ssl\\wallet\\private_wallet.key",
@@ -26,7 +35,7 @@ This application requires access to the wallet certificate & key in order to use
 # TODO #
 - Post Generated Offer file to tibetswap api
 - Introduce whitelist for automatically making offers for tibetswap api.
-- Add Tests
+- Add Chia Wallet RPC Tests
 
 # Contributing
 Please feel free to contribute some TXCH. The tests in this project are integration tests that create real offers using a test wallet on the testnet. A few tests can easily tie up all the TXCH in the wallet.
