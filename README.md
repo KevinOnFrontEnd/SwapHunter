@@ -4,6 +4,7 @@ A Proof of concept console application for sniping new $xch tokens listed on Tib
 With the chia ecosystem ramping up now that there is a AMM (TibetSwap), there will be an influx in tokens that are listed on the exchange. This console application is intended to help users find new tokens available to trade as early as possible. 
 
 This program will do the following when configured
+
 TBD
 
 # Setup instructions
@@ -52,8 +53,10 @@ txch1mcgpakts9fqxfp3k45t89vpweue0ucn4mc34g2wpv6e8fk63p6vq7a60et
 - Thanks to Yakuhito over at TibetSwap for helping me understand the Offers when they were failing.
 
 # Disclaimer
+
 I take no responsibility for the use or misuse of any products, services, or information provided. It is the sole responsibility of the user to exercise their judgment and discretion when utilizing these resources. I do not accept liability for any damages, losses, or adverse consequences resulting from the use, interpretation, or reliance upon the materials provided. Users are encouraged to seek professional advice and exercise caution when applying the information or engaging in any activities related this program.
 
+***A dev fee of 0.003 is added onto the offer that is posted TibetSwap (Same as what the website does). The fee is split evening between the TibetSwap dev wallet & SwapHunter dev wallet.**
 # Build & Test Status
 ![Build](https://github.com/kevinonfrontend/swaphunter/actions/workflows/build_and_test.yml/badge.svg)
 

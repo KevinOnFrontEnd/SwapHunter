@@ -18,7 +18,7 @@ namespace SwapHunter.Client.TibetSwap
     private IOptions<TibetSwapOptions> _options;
     private HttpClient _client { get; set; }
     private string SWAPHUNTER_DEV_WALLET_ADDRESS = "txch1tfnhtecuyyncd4jqse6hql5gm4w28am0qyfvxmwnqpc5269j802spszdgl";
-    private string TIBETSWAP_DEV_WALLET_ADDRESS = "txch1hm6sk2ktgx3u527kp803ex2lten3xzl2tpjvrnc0affvx5upd6mqnn6lxh";
+    private string TIBETSWAP_DEV_WALLET_ADDRESS =  "txch1hm6sk2ktgx3u527kp803ex2lten3xzl2tpjvrnc0affvx5upd6mqnn6lxh";
     
     public TibetClient(IOptions<TibetSwapOptions> options, HttpClient httpClient) 
     { 
@@ -53,7 +53,7 @@ namespace SwapHunter.Client.TibetSwap
         action = "SWAP",
         total_donation_amount = (int) Math.Floor(donationAmount),
         donation_addresses= new []{SWAPHUNTER_DEV_WALLET_ADDRESS, TIBETSWAP_DEV_WALLET_ADDRESS}, //TibetSwap Dev & SwapHunter share dev fee
-        donation_weights = new []{1},
+        donation_weights = new []{1,1},
       };
       
       var json = JsonConvert.SerializeObject(postedOffer);
