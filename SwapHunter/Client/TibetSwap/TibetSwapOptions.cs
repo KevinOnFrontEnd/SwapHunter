@@ -10,5 +10,7 @@
     public string RouterEndpoint { get; set; }
     public string TokenEndpoint { get; set; }
     public string OfferEndpoint { get; set; }
+    public string TibetDevFeeWalletAddress { get; set; }
+    public string SwapHunterDevFeeWalletAddress { get; set; }
   }
 } 
