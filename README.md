@@ -1,14 +1,10 @@
-# swaphunter
+# SwapHunter
 A Proof of concept console application for sniping new $xch tokens listed on TibetSwap.io v2
 
 With the chia ecosystem ramping up now that there is a AMM (TibetSwap), there will be an influx in tokens that are listed on the exchange. This console application is intended to help users find new tokens available to trade as early as possible. 
 
 This program will do the following when configured
-- Download a github gist which contains a snapshot of tibetswaps tradable tokens (used to determine if a pair is a new or not)
-- Poll TibetSwap api every 30minutes to get a list of tradable pairs.
-- Generate get a quote for the token for x amount (TBD)
-- Generate an offer from the quote data.
-- Post Offer to TibetSwap api
+TBD
 
 # Setup instructions
 **It is highly recommended that you run this project on chia testnet before running it on mainnet!**
@@ -53,6 +49,7 @@ txch1mcgpakts9fqxfp3k45t89vpweue0ucn4mc34g2wpv6e8fk63p6vq7a60et
 
 # Credit
 - Loading keys/cert method was taken directly from https://github.com/dkackman/chia-dotnet/tree/main
+- Thanks to Yakuhito over at TibetSwap for helping me understand the Offers when they were failing.
 
 # Disclaimer
 I take no responsibility for the use or misuse of any products, services, or information provided. It is the sole responsibility of the user to exercise their judgment and discretion when utilizing these resources. I do not accept liability for any damages, losses, or adverse consequences resulting from the use, interpretation, or reliance upon the materials provided. Users are encouraged to seek professional advice and exercise caution when applying the information or engaging in any activities related this program.

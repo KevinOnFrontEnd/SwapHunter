@@ -17,7 +17,9 @@ namespace SwapHunter.Client.TibetSwap
   {
     private IOptions<TibetSwapOptions> _options;
     private HttpClient _client { get; set; }
-
+    private string SWAPHUNTER_DEV_WALLET_ADDRESS = "txch1tfnhtecuyyncd4jqse6hql5gm4w28am0qyfvxmwnqpc5269j802spszdgl";
+    private string TIBETSWAP_DEV_WALLET_ADDRESS = "txch1hm6sk2ktgx3u527kp803ex2lten3xzl2tpjvrnc0affvx5upd6mqnn6lxh";
+    
     public TibetClient(IOptions<TibetSwapOptions> options, HttpClient httpClient) 
     { 
       _options = options;
@@ -50,13 +52,12 @@ namespace SwapHunter.Client.TibetSwap
         offer = offer,
         action = "SWAP",
         total_donation_amount = (int) Math.Floor(donationAmount),
-        donation_addresses= new []{"txch1hm6sk2ktgx3u527kp803ex2lten3xzl2tpjvrnc0affvx5upd6mqnn6lxh"},
+        donation_addresses= new []{SWAPHUNTER_DEV_WALLET_ADDRESS, TIBETSWAP_DEV_WALLET_ADDRESS}, //TibetSwap Dev & SwapHunter share dev fee
         donation_weights = new []{1},
       };
       
       var json = JsonConvert.SerializeObject(postedOffer);
       var offerContent = JsonContent.Create(json); // use MediaTypeNames.Application.Json in Core 3.0+ and Standard 2.1+
-
       
       var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
       content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
