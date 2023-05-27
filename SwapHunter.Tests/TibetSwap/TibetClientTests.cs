@@ -34,7 +34,7 @@ public class TibetClientTests : SwapHunterTestBase
         var dbx_txch_pair = "3f2b9ddb0d90b81f43d86870d31b505df5dd377f4215928a436bc51d9d613294";
 
         // act
-        var quote = await TibetClient.GetQuote(dbx_txch_pair, "1000");
+        var quote = await TibetClient.GetQuote(dbx_txch_pair, 1000);
         
         // assert
         Assert.NotNull(quote);

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SwapHunter.Client;
+using SwapHunter.Client.Chia;
+using SwapHunter.Client.TibetSwap;
 using SwapHunter.Worker;
 
 namespace SwapHunter.Tests;

@@ -11,7 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwapHunter.Client
+namespace SwapHunter.Client.Chia
 {
   public class ChiaRpcClient : IChiaRpcClient
   {
@@ -27,14 +27,15 @@ namespace SwapHunter.Client
     //get_sync_status
     //add_token
     
-    public async Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double xch_amount_in_mojos, double fee)
+    public async Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double mojo_amount_offering, double fee, bool validate_only=true)
     {
       var obj =  new {
         offer= new Dictionary<string,double>() {
-          { "1", -10000000000 },
+          { "1", -mojo_amount_offering },
           { assetid, requesting_amount }
         },
-        Fee=fee
+        fee=fee,
+        validate_only=validate_only
       };
 
       var targetJObject = JObject.FromObject(obj);

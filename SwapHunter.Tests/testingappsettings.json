@@ -5,7 +5,8 @@
     "TokenPairEndpoint": "/pair",
     "QuoteEndpoint": "/quote",
     "RouterEndpoint": "/router",
-    "TokenEndpoint": "/token"
+    "TokenEndpoint": "/token",
+    "OfferEndpoint": "/offer"
   },
   "ChiaRpc": {
     "WalletRpcEndpoint": "https://127.0.0.1:9256",

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using SwapHunter.Client;
 using SwapHunter.Worker;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using SwapHunter.Client.Chia;
+using SwapHunter.Client.TibetSwap;
 
 namespace SwapHunter
 {
@@ -72,7 +74,8 @@ namespace SwapHunter
               var handler = new SocketsHttpHandler();
               handler.SslOptions.ClientCertificates = GetCerts(chiaRpcOptions.Wallet_cert_path, chiaRpcOptions.Wallet_key_path);
               handler.SslOptions.RemoteCertificateValidationCallback += ValidateServerCertificate;
-              
+
+              services.AddSingleton<IOfferService, OfferService>();
               services.AddHttpClient<IChiaRpcClient, ChiaRpcClient>(c =>
               {
                 c.BaseAddress = new System.Uri(chiaRpcOptions.WalletRpcEndpoint);

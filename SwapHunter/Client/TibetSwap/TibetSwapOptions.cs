@@ -1,4 +1,4 @@
-﻿namespace SwapHunter.Client
+﻿namespace SwapHunter.Client.TibetSwap
 {
   public class TibetSwapOptions
   {
@@ -9,5 +9,6 @@
     public string QuoteEndpoint { get; set; }
     public string RouterEndpoint { get; set; }
     public string TokenEndpoint { get; set; }
+    public string OfferEndpoint { get; set; }
   }
 } 

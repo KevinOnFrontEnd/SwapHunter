@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SwapHunter.Client
+namespace SwapHunter.Client.Chia
 {
   public interface IChiaRpcClient
   {
-    Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double xch_amount, double fee);
+    Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double mojo_amount_offering, double fee, bool validate_only);
   }
 }

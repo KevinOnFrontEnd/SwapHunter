@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using SwapHunter.Client;
+using SwapHunter.Client.Chia;
+using SwapHunter.Client.TibetSwap;
 using Xunit;
 
 namespace SwapHunter.Tests;

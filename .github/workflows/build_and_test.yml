@@ -28,7 +28,7 @@ jobs:
       run: |
         echo "${{secrets.WALLET_KEY}}" > ~/.env_key
     - name: install icu components
-      run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https && sudo apt install -y libicu67 && sudo apt install -y coreutils
+      run: sudo apt-get update && sudo apt-get install -y sudo apt-transport-https && sudo apt install -y libicu67 && sudo apt install -y coreutils && sudo apt install net-tools
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -38,12 +38,46 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+
     - name: Chia Init
       run: chia init  
+    - name: rename localhost
+      run: |
+        sed -i 's/self_hostname ".\+"/self_hostname "127.0.0.1"/' /root/.chia/mainnet/config/config.yaml
     - name: Import Wallet
       run: chia keys add -f ~/.env_key -l IntegrationTestsWallet
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-      
-    - name: show where chia ssl cert is
-      run: ls /root/.chia/
+    - name: Chia change to testnet
+      run: chia configure -t true  
+    - name: restart chia wallet
+      run: chia start wallet -r
+    - name: sleep until wallet starts & is in sync
+      run: sleep 3m
+    - name: show chia sync status
+      run: |
+        curl -X POST --insecure \
+        --cert /root/.chia/mainnet/config/ssl/wallet/private_wallet.crt \
+        --key /root/.chia/mainnet/config/ssl/wallet/private_wallet.key  \
+        -H "Accept: application/json" \
+        -H "Content-Type: application/json" \
+        "https://localhost:9256/get_sync_status" \
+        -d "{}"
+    - name: show wallet balance
+      run: |
+        curl -X POST --insecure \
+        --cert /root/.chia/mainnet/config/ssl/wallet/private_wallet.crt \
+        --key /root/.chia/mainnet/config/ssl/wallet/private_wallet.key  \
+        -H "Accept: application/json" \
+        -H "Content-Type: application/json" \
+        "https://localhost:9256/get_wallet_balance" \
+        -d '{"wallet_id": 1}'
+    #- name: Test
+    #  run: dotnet test --no-build --verbosity normal
+    - name: Test with dotnet
+      run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-results-${{ matrix.dotnet-version }}
+        path: TestResults-${{ matrix.dotnet-version }}
+          # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
