@@ -1,14 +1,12 @@
 using SwapHunter.Client;
+using SwapHunter.Tests.Core;
 using Xunit;
 
-namespace SwapHunter.Tests;
+namespace SwapHunter.Tests.TibetClientTests;
 
 public class TibetClientTests : SwapHunterTestBase
 {
-    //Get Quote
-    //Post offer
-    //Get Token Pairs
-    public TibetClientTests(SwapHunterFixture fixture) : base(fixture)
+    public TibetClientTests(SwapHunterFixture baseTest):base(baseTest)
     {
     }
 

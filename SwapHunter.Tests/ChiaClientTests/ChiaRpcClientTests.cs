@@ -1,10 +1,11 @@
+using SwapHunter.Tests.Core;
 using Xunit;
 
-namespace SwapHunter.Tests;
+namespace SwapHunter.Tests.ChiaClientTests;
 
 public class ChiaRpcClientTests  : SwapHunterTestBase
 {
-    public ChiaRpcClientTests(SwapHunterFixture fixture) : base(fixture)
+    public ChiaRpcClientTests(SwapHunterFixture baseTest):base(baseTest)
     {
     }
     

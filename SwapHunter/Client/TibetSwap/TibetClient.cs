@@ -91,5 +91,13 @@ namespace SwapHunter.Client.TibetSwap
       List<TokenResponse> pairs = JsonConvert.DeserializeObject<List<TokenResponse>>(responseBody);
       return pairs;
     }
+
+    private string[] GetDonationAddresses()
+    {
+      var DonationAddresses = new[]
+        { _options.Value.TibetDevFeeWalletAddress, _options.Value.SwapHunterDevFeeWalletAddress };
+      var nonEmpty = DonationAddresses.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+      return null;
+    }
   }
 }

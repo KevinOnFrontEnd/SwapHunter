@@ -1,10 +1,12 @@
+using SwapHunter.Tests.Core;
 using Xunit;
 
 namespace SwapHunter.Tests;
 
 public class ChiaHelperTests : SwapHunterTestBase
 {
-    public ChiaHelperTests(SwapHunterFixture fixture) : base(fixture)
+    
+    public ChiaHelperTests(SwapHunterFixture baseTest):base(baseTest)
     {
     }
 
