@@ -6,7 +6,9 @@
     "QuoteEndpoint": "/quote",
     "RouterEndpoint": "/router",
     "TokenEndpoint": "/token",
-    "OfferEndpoint": "/offer"
+    "OfferEndpoint": "/offer",
+    "TibetDevFeeWalletAddress" :  "txch1hm6sk2ktgx3u527kp803ex2lten3xzl2tpjvrnc0affvx5upd6mqnn6lxh",
+    "SwapHunterDevFeeWalletAddress":"txch1tfnhtecuyyncd4jqse6hql5gm4w28am0qyfvxmwnqpc5269j802spszdgl"
   },
   "ChiaRpc": {
     "WalletRpcEndpoint": "https://127.0.0.1:9256",

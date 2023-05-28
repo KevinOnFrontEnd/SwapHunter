@@ -17,8 +17,6 @@ namespace SwapHunter.Client.TibetSwap
   {
     private IOptions<TibetSwapOptions> _options;
     private HttpClient _client { get; set; }
-    private string SWAPHUNTER_DEV_WALLET_ADDRESS = "txch1tfnhtecuyyncd4jqse6hql5gm4w28am0qyfvxmwnqpc5269j802spszdgl";
-    private string TIBETSWAP_DEV_WALLET_ADDRESS =  "txch1hm6sk2ktgx3u527kp803ex2lten3xzl2tpjvrnc0affvx5upd6mqnn6lxh";
     
     public TibetClient(IOptions<TibetSwapOptions> options, HttpClient httpClient) 
     { 
@@ -44,15 +42,14 @@ namespace SwapHunter.Client.TibetSwap
       return quote;
     }
 
-    public async Task<OfferResponse> PostOffer(string pairId, string offer, double donationAmount, string action = "SWAP",
-      string[] donationAddresses = null, string[] donationWeights = null)
+    public async Task<OfferResponse> PostOffer(string pairId, string offer, double donationAmount, string action = "SWAP")
     {
       var postedOffer = new
       {
         offer = offer,
         action = "SWAP",
         total_donation_amount = (int) Math.Floor(donationAmount),
-        donation_addresses= new []{SWAPHUNTER_DEV_WALLET_ADDRESS, TIBETSWAP_DEV_WALLET_ADDRESS}, //TibetSwap Dev & SwapHunter share dev fee
+        donation_addresses= new []{_options.Value.TibetDevFeeWalletAddress, _options.Value.SwapHunterDevFeeWalletAddress}, //TibetSwap Dev & SwapHunter share dev fee
         donation_weights = new []{1,1},
       };
       
@@ -93,6 +90,14 @@ namespace SwapHunter.Client.TibetSwap
       string responseBody = await response.Content.ReadAsStringAsync();
       List<TokenResponse> pairs = JsonConvert.DeserializeObject<List<TokenResponse>>(responseBody);
       return pairs;
+    }
+
+    private string[] GetDonationAddresses()
+    {
+      var DonationAddresses = new[]
+        { _options.Value.TibetDevFeeWalletAddress, _options.Value.SwapHunterDevFeeWalletAddress };
+      var nonEmpty = DonationAddresses.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+      return null;
     }
   }
 }

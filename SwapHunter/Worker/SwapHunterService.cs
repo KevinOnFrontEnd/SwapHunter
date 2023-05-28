@@ -1,27 +1,36 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.ComponentModel.Design;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SwapHunter.Client;
 using System.Text.Json.Nodes;
+using Spectre.Console;
 using SwapHunter.Client.Chia;
 using SwapHunter.Client.TibetSwap;
 
 namespace SwapHunter.Worker
 {
+  /// <summary>
+  /// SwapHunter Service that runs as a background service that deals with
+  /// Fetching tokens from tibetswaps api and facilitates creating the offer
+  /// for a swap.
+  /// </summary>
   public class SwapHunterService : BackgroundService
   {
     private ITibetClient _tibetClient { get; set; }
     private IOptions<TibetSwapOptions> _tibetOptions { get; set; }
     private IConfiguration _config;
     private IChiaRpcClient _chiaRpcClient { get; set; }
+    private IOfferService _offerService { get; set; }
 
-    public SwapHunterService(ITibetClient tibetclient, IOptions<TibetSwapOptions> tibetOptions, IConfiguration config, IChiaRpcClient chiaRpcClient)
+    public SwapHunterService(ITibetClient tibetclient, IOptions<TibetSwapOptions> tibetOptions, IConfiguration config, IChiaRpcClient chiaRpcClient, IOfferService offerService)
     {
       _tibetClient = tibetclient;
       _tibetOptions = tibetOptions;
       _config = config;
       _chiaRpcClient = chiaRpcClient;
+      _offerService = offerService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -31,45 +40,52 @@ namespace SwapHunter.Worker
         //known token pairs
         var knownTokens = await GetLatestTokenPairGistFromGitHub();
         var knownTokenshs = knownTokens.ToDictionary(x => x.pair_id);
-
-        while (true)
+        var tokenPairs = await _tibetClient.GetTokenPairs();
+        var apiPairs = tokenPairs.ToDictionary(x => x.pair_id);
+        var swapChoices = apiPairs.Select(x => x.Value.pair_id).ToList();
+        swapChoices.Add("Exit");
+        
+        // logic that handles accepting user input on what tokens to swap & how much XCH to exchange for it.
+        string rootCommand = "";
+        while (rootCommand != "Exit")
         {
-          //fetch token pairs listed on the api
-          var tokenPairs = await _tibetClient.GetTokenPairs();
-          var apiPairs = tokenPairs.ToDictionary(x=>x.pair_id);
-
-          var newPairs = GetNewPairs(knownTokenshs, apiPairs);
-          foreach(var pair in newPairs)
-          {
-            Console.Beep();
-            Console.WriteLine($"New Pairs Detected");
-            Console.WriteLine($"{pair.short_name} - {pair.name}");
-            
-            //TODO: Determine if this token is worth getting
-            
-            //TBC
-            //intetionally can't get to this block of code until
-            //logic has been decided on which tokens/token amount has been decided.
-            if (false)
-            {
-              var quote = await _tibetClient.GetQuote(pair.pair_id, 1000);
-              if (quote != null)
+          rootCommand = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+              .Title("What Tokens would you like to [green]SWAP[/]?")
+              .MoreChoicesText("[grey](Move up and down to reveal more Tokens Pairs)[/]")
+              .AddChoices(swapChoices)
+              .UseConverter((i) =>
               {
-                var requestingTokenAmount = 100.0;
-                var xchAmount = ChiaHelper.ConvertToMojos(0.01);
-                var fee = ChiaHelper.ConvertToMojos(0.0001); //higher fee = faster transaction
-                var offer = await _chiaRpcClient.CreateOffer(pair.Asset_id, requestingTokenAmount, xchAmount, fee,false);
-                if (offer.Success)
+                var pair = apiPairs.FirstOrDefault(x => x.Value.pair_id == i);
+                return i switch
                 {
-                  //TODO:
-                  //Post Content of offer file to (https://api.v2.tibetswap.io/offer/{quoteid})
-                }
-              }
+                  "Exit" => "Exit",
+                  _ => $"{pair.Value.short_name} - {pair.Value.Asset_id})"
+                };
+              })
+          );
+
+          if (rootCommand == "Exit")
+            Environment.Exit(1);
+
+          if (!string.IsNullOrEmpty(rootCommand))
+          {
+            var pair = apiPairs.First(x => x.Value.pair_id == rootCommand);
+            var swapAmount =
+              AnsiConsole.Ask<double>($"What is the amount of $XCH would you like to swap for [green]{pair.Value.short_name}[/]?");
+            var swapAmountInMojos = ChiaHelper.ConvertToMojos(swapAmount);
+            var quote = await _tibetClient.GetQuote(pair.Value.pair_id, swapAmountInMojos);
+            var tokenOutput = TibetHelper.GetInputPrice(swapAmountInMojos, quote.input_reserve, quote.output_reserve);
+            var confirmSwap = AnsiConsole.Confirm($"You would receive ~{tokenOutput/1000} {pair.Value.short_name} - confirm swap?", false);
+            if (confirmSwap)
+            {
+              var (_,chiaOfferRpcResponse,tibetOfferResponse) = await _offerService.CreateOffer(swapAmount, pair.Value.Asset_id);
+              AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success ? $"Chia Offer Created: [green]{chiaOfferRpcResponse.Success}[/]" : $"Chia Offer Created: [red]{chiaOfferRpcResponse.Success}[/]");
+              AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success ? $"Offer Posted to TibetSwap Successfully: [green]{tibetOfferResponse.Success}[/]" : $"Offer Posted to TibetSwap Successfully: [red]{tibetOfferResponse.Success}[/]");
+              Console.WriteLine($"Press any key to return to main menu");
+              Console.ReadKey();
             }
           }
-          
-          //wait 10 mins arbitrary amount time before trying again. This is configurable.
-          await Task.Delay(_tibetOptions.Value.TokenRefreshDelay);
         }
       }
       catch (Exception e)
@@ -78,17 +94,6 @@ namespace SwapHunter.Worker
       }
     }
     
-    private List<TokenResponse> GetNewPairs(Dictionary<string, TokenResponse> knownPairs, Dictionary<string, TokenResponse> apiPairs)
-    {
-      var newPairs = new List<TokenResponse>();
-      foreach (var item in apiPairs)
-      {
-        if (!knownPairs.ContainsKey(item.Key))
-          newPairs.Add(item.Value);
-      }
-      return newPairs;
-    }
-
     /// <summary>
     /// This method fetches the latest gist from github. It is used as the known list of tokens - 
     /// When there are subsequent tokens found when fetching from tibetswap - then they are new.

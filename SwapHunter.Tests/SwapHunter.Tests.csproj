@@ -26,7 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="testingappsettings.json">
+    <None Remove="testappsettings.json" />
+    <None Include="testingappsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -11,7 +11,7 @@ namespace SwapHunter.Client.TibetSwap
     Task<List<TokenResponse>> GetTokenPairs();
     Task<TokenPairResponse> GetPair(string pair);
     Task<QuoteResponse> GetQuote(string pair, double amount_in, bool xch_is_input = true, bool estimate_fee = true);
-    Task<OfferResponse> PostOffer(string pairId, string offer, double donationAmount, string action="SWAP", string[] donationAddresses=null, string[] donationWeights=null);
+    Task<OfferResponse> PostOffer(string pairId, string offer, double donationAmount, string action="SWAP");
     Task<RouterResponse> GetRouter();
     Task<TokenResponse> GetToken(string assetId);
   }
