@@ -3,8 +3,11 @@ using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,53 +18,62 @@ using SwapHunter.Worker;
 
 namespace SwapHunter.Tests.Core;
 
-public class SwapHunterFixture
+public class SwapHunterFixture : IDisposable
 {
     public IHost TestHost { get; }
 
     public SwapHunterFixture()
     {
-        TestHost = CreateHostBuilder().Build();
-        Task.Run(() => TestHost.RunAsync());
+        try
+        {
+            TestHost = CreateHostBuilder().Build();
+            TestHost.Start();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
     }
 
     public IHostBuilder? CreateHostBuilder()
     {
-        return Host.CreateDefaultBuilder().ConfigureWebHostDefaults(b =>
-        {
-            b.ConfigureAppConfiguration((hostContext, configurationBuilder) =>
+        return new HostBuilder()
+            .ConfigureWebHost(webHost =>
             {
-                configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
-                configurationBuilder.AddJsonFile("testingappsettings.json", optional: false);
-                configurationBuilder.AddEnvironmentVariables(prefix: "PREFIX_");
-                configurationBuilder.AddUserSecrets<SwapHunterFixture>(optional: true);
-            });
-        }).ConfigureWebHost(builder =>
-        {
-            builder.ConfigureServices((hostContext, services) =>
-            {
-                var chiaRpcOptions = hostContext.Configuration.GetSection("ChiaRpc").Get<ChiaRpcOptions>();
-                var tibetSwapOptions = hostContext.Configuration.GetSection("TibetSwap").Get<TibetSwapOptions>();
-                var handler = new SocketsHttpHandler();
-                handler.SslOptions.ClientCertificates =
-                    GetCerts(chiaRpcOptions.Wallet_cert_path, chiaRpcOptions.Wallet_key_path);
-                handler.SslOptions.RemoteCertificateValidationCallback += ValidateServerCertificate;
-
-                services.AddHttpClient<IChiaRpcClient, ChiaRpcClient>(c =>
+                webHost.ConfigureAppConfiguration((hostContext, configurationBuilder) =>
                 {
-                    c.BaseAddress = new System.Uri(chiaRpcOptions.WalletRpcEndpoint);
-                }).ConfigurePrimaryHttpMessageHandler(() => { return handler; });
-
-                services.AddHttpClient<ITibetClient, TibetClient>(c =>
-                {
-                    c.BaseAddress = new System.Uri(tibetSwapOptions.ApiEndpoint);
+                    configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
+                    configurationBuilder.AddJsonFile("testingappsettings.json", optional: false);
+                    configurationBuilder.AddEnvironmentVariables(prefix: "PREFIX_");
+                    configurationBuilder.AddUserSecrets<SwapHunterFixture>(optional: true);
                 });
-                
-                services.AddSingleton<IOfferService, OfferService>();
-                services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
-                services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
+
+                webHost.ConfigureServices((hostContext, services) =>
+                {
+                    var chiaRpcOptions = hostContext.Configuration.GetSection("ChiaRpc").Get<ChiaRpcOptions>();
+                    var tibetSwapOptions = hostContext.Configuration.GetSection("TibetSwap").Get<TibetSwapOptions>();
+                    var handler = new SocketsHttpHandler();
+                    handler.SslOptions.ClientCertificates =
+                        GetCerts(chiaRpcOptions.Wallet_cert_path, chiaRpcOptions.Wallet_key_path);
+                    handler.SslOptions.RemoteCertificateValidationCallback += ValidateServerCertificate;
+
+                    services.AddHttpClient<IChiaRpcClient, ChiaRpcClient>(c =>
+                    {
+                        c.BaseAddress = new System.Uri(chiaRpcOptions.WalletRpcEndpoint);
+                    }).ConfigurePrimaryHttpMessageHandler(() => { return handler; });
+
+                    services.AddHttpClient<ITibetClient, TibetClient>(c =>
+                    {
+                        c.BaseAddress = new System.Uri(tibetSwapOptions.ApiEndpoint);
+                    });
+
+                    services.AddSingleton<IOfferService, OfferService>();
+                    services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
+                    services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
+                });
+                webHost.UseTestServer();
+                webHost.Configure(app => { app.Run(async ctx => { await ctx.Response.WriteAsync("Hello World!"); }); });
             });
-        });
     }
 
     private static bool ValidateServerCertificate(object sender, X509Certificate? certificate, X509Chain? chain,
@@ -109,5 +121,10 @@ public class SwapHunterFixture
         var ephemeralCert = new X509Certificate2(certWithKey.Export(X509ContentType.Pkcs12));
 
         return new(ephemeralCert);
+    }
+
+    public void Dispose()
+    {
+        TestHost.Dispose();
     }
 }
