@@ -13,6 +13,7 @@ namespace SwapHunter.Client.Chia
     public string Error { get; set; }
     
     public double Spendable { set; get; }
-    
+    public string offer_id { get; set; }
+
   }
 }
