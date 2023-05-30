@@ -21,9 +21,8 @@ public class SwapHunterFixture
 
     public SwapHunterFixture()
     {
-        // TestHost = CreateHostBuilder().Build();
-        // Task.Run(() => TestHost.RunAsync());
-
+        TestHost = CreateHostBuilder().Build();
+        Task.Run(() => TestHost.RunAsync());
     }
 
     public IHostBuilder? CreateHostBuilder()
@@ -39,7 +38,6 @@ public class SwapHunterFixture
             });
         }).ConfigureWebHost(builder =>
         {
-            //builder.UseConfiguration(config);
             builder.ConfigureServices((hostContext, services) =>
             {
                 var chiaRpcOptions = hostContext.Configuration.GetSection("ChiaRpc").Get<ChiaRpcOptions>();
@@ -59,6 +57,7 @@ public class SwapHunterFixture
                     c.BaseAddress = new System.Uri(tibetSwapOptions.ApiEndpoint);
                 });
                 
+                services.AddSingleton<IOfferService, OfferService>();
                 services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
                 services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
             });
