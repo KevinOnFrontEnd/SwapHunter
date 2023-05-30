@@ -54,8 +54,6 @@ namespace SwapHunter.Client.TibetSwap
       };
       
       var json = JsonConvert.SerializeObject(postedOffer);
-      var offerContent = JsonContent.Create(json); // use MediaTypeNames.Application.Json in Core 3.0+ and Standard 2.1+
-      
       var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
       content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
       var response = await _client.PostAsync($"{_options.Value.OfferEndpoint}/{pairId}", content);
