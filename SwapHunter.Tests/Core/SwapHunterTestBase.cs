@@ -27,8 +27,9 @@ public class SwapHunterTestBase : IClassFixture<SwapHunterFixture>
     
     public SwapHunterTestBase(SwapHunterFixture fixture)
     {
-        Fixture = fixture;
+
         TestHost = CreateHostBuilder().Build();
+        Fixture = fixture;
         Task.Run(() =>
         { 
             return TestHost.StartAsync();
