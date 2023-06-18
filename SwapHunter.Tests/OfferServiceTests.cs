@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Hosting;
-using SwapHunter.Client.TibetSwap;
 using SwapHunter.Tests.Core;
 using Xunit;
 

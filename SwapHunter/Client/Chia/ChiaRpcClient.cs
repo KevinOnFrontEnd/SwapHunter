@@ -10,6 +10,9 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
 namespace SwapHunter.Client.Chia
 {
@@ -17,11 +20,13 @@ namespace SwapHunter.Client.Chia
   {
     IOptions<ChiaRpcOptions> _options { get; set; }
     private HttpClient _client;
+    private ILogger<ChiaRpcClient> _logger { get; set; }
     
-    public ChiaRpcClient(IOptions<ChiaRpcOptions> options, HttpClient httpClient) 
+    public ChiaRpcClient(IOptions<ChiaRpcOptions> options, HttpClient httpClient, ILogger<ChiaRpcClient> logger) 
     {
       _options = options;
       _client = httpClient;
+      _logger = logger;
     }
 
     //get_sync_status
@@ -40,10 +45,12 @@ namespace SwapHunter.Client.Chia
 
       var targetJObject = JObject.FromObject(obj);
       var content = new StringContent(targetJObject.ToString(), Encoding.UTF8, "application/json");
+      _logger.LogInformation("{@obj}", obj);
       var response = await _client.PostAsync($"/create_offer_for_ids", content);
       response.EnsureSuccessStatusCode();
       string responseBody = await response.Content.ReadAsStringAsync();
       var offer = JsonConvert.DeserializeObject<CreateOfferResponse>(responseBody);
+      _logger.LogInformation("{@offer}", offer);
       return offer;
     }
   }

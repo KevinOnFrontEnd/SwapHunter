@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SwapHunter.Client;
 using SwapHunter.Client.Chia;
-using SwapHunter.Client.TibetSwap;
 using SwapHunter.Worker;
+using Tibby;
 using Xunit;
 
 namespace SwapHunter.Tests.Core;
@@ -18,7 +18,7 @@ namespace SwapHunter.Tests.Core;
 public class SwapHunterTestBase : IClassFixture<SwapHunterFixture>
 {
     public SwapHunterFixture Fixture { get; }
-    public ITibetClient TibetClient => Fixture.TestHost.Services.GetService<ITibetClient>();
+    public ITibbyClient TibetClient => Fixture.TestHost.Services.GetService<ITibbyClient>();
     
     public IChiaRpcClient ChiaWalletClient => Fixture.TestHost.Services.GetService<IChiaRpcClient>();
     

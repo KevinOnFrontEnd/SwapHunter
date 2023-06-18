@@ -11,10 +11,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using SwapHunter.Client;
 using SwapHunter.Client.Chia;
-using SwapHunter.Client.TibetSwap;
 using SwapHunter.Worker;
+using Tibby.Extensions;
+using Tibby.Models;
 
 namespace SwapHunter.Tests.Core;
 
@@ -51,24 +53,24 @@ public class SwapHunterFixture : IDisposable
                 webHost.ConfigureServices((hostContext, services) =>
                 {
                     var chiaRpcOptions = hostContext.Configuration.GetSection("ChiaRpc").Get<ChiaRpcOptions>();
-                    var tibetSwapOptions = hostContext.Configuration.GetSection("TibetSwap").Get<TibetSwapOptions>();
                     var handler = new SocketsHttpHandler();
                     handler.SslOptions.ClientCertificates =
                         GetCerts(chiaRpcOptions.Wallet_cert_path, chiaRpcOptions.Wallet_key_path);
                     handler.SslOptions.RemoteCertificateValidationCallback += ValidateServerCertificate;
 
+                    services.AddLogging(loggingBuilder => {
+                        loggingBuilder.AddFile("app.log", append:true);
+                    });
+                    
                     services.AddHttpClient<IChiaRpcClient, ChiaRpcClient>(c =>
                     {
                         c.BaseAddress = new System.Uri(chiaRpcOptions.WalletRpcEndpoint);
                     }).ConfigurePrimaryHttpMessageHandler(() => { return handler; });
 
-                    services.AddHttpClient<ITibetClient, TibetClient>(c =>
-                    {
-                        c.BaseAddress = new System.Uri(tibetSwapOptions.ApiEndpoint);
-                    });
+                    services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
+                    services.AddTibbyClient();
 
                     services.AddSingleton<IOfferService, OfferService>();
-                    services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
                     services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
                 });
                 webHost.UseTestServer();

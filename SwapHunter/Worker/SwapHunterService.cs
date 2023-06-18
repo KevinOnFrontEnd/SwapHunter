@@ -5,9 +5,11 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SwapHunter.Client;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using SwapHunter.Client.Chia;
-using SwapHunter.Client.TibetSwap;
+using Tibby;
+using Tibby.Models;
 
 namespace SwapHunter.Worker
 {
@@ -18,20 +20,23 @@ namespace SwapHunter.Worker
     /// </summary>
     public class SwapHunterService : BackgroundService
     {
-        private ITibetClient _tibetClient { get; set; }
+        private ITibbyClient _tibetClient { get; set; }
         private IOptions<TibetSwapOptions> _tibetOptions { get; set; }
         private IConfiguration _config;
         private IChiaRpcClient _chiaRpcClient { get; set; }
         private IOfferService _offerService { get; set; }
 
-        public SwapHunterService(ITibetClient tibetclient, IOptions<TibetSwapOptions> tibetOptions,
-            IConfiguration config, IChiaRpcClient chiaRpcClient, IOfferService offerService)
+        private ILogger<SwapHunterService> _logger;
+
+        public SwapHunterService(ITibbyClient tibetclient, IOptions<TibetSwapOptions> tibetOptions,
+            IConfiguration config, IChiaRpcClient chiaRpcClient, IOfferService offerService, ILogger<SwapHunterService> logger)
         {
             _tibetClient = tibetclient;
             _tibetOptions = tibetOptions;
             _config = config;
             _chiaRpcClient = chiaRpcClient;
             _offerService = offerService;
+            _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,7 +46,7 @@ namespace SwapHunter.Worker
                 //known token pairs
                 var knownTokens = await GetLatestTokenPairGistFromGitHub();
                 var knownTokenshs = knownTokens.ToDictionary(x => x.pair_id);
-                var tokenPairs = await _tibetClient.GetTokenPairs();
+                var (tokenPairs,_) = await _tibetClient.GetTokenPairs();
                 var apiPairs = tokenPairs.ToDictionary(x => x.pair_id);
                 var swapChoices = apiPairs.Select(x => x.Value.pair_id).ToList();
                 swapChoices.Add("Exit");
@@ -74,7 +79,10 @@ namespace SwapHunter.Worker
                     );
 
                     if (rootCommand == "Exit")
+                    {
+                        _logger.LogInformation("Exiting");
                         Environment.Exit(1);
+                    }
 
                     if (!string.IsNullOrEmpty(rootCommand))
                     {
@@ -83,8 +91,8 @@ namespace SwapHunter.Worker
                             AnsiConsole.Ask<double>(
                                 $"What is the amount of $XCH would you like to swap for [green]{pair.Value.short_name}[/]?");
                         var swapAmountInMojos = ChiaHelper.ConvertToMojos(swapAmount);
-                        var quote = await _tibetClient.GetQuote(pair.Value.pair_id, swapAmountInMojos);
-                        var tokenOutput = TibetHelper.GetInputPrice(swapAmountInMojos, quote.input_reserve,
+                        var (quote,_) = await _tibetClient.GetQuote(pair.Value.pair_id, swapAmountInMojos);
+                        var tokenOutput = TibbyHelper.GetInputPrice(swapAmountInMojos, quote.input_reserve,
                             quote.output_reserve);
                         var confirmSwap =
                             AnsiConsole.Confirm(
