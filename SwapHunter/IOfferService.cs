@@ -1,5 +1,5 @@
 using SwapHunter.Client.Chia;
-using SwapHunter.Client.TibetSwap;
+using Tibby.Models;
 
 namespace SwapHunter;
 

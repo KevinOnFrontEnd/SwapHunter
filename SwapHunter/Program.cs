@@ -8,8 +8,12 @@ using Microsoft.Extensions.Hosting;
 using SwapHunter.Client;
 using SwapHunter.Worker;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using SwapHunter.Client.Chia;
-using SwapHunter.Client.TibetSwap;
+using Tibby;
+using Tibby.Extensions;
+using Tibby.Models;
 
 namespace SwapHunter
 {
@@ -24,7 +28,14 @@ namespace SwapHunter
                     configurationBuilder.AddEnvironmentVariables(prefix: "PREFIX_");
                     configurationBuilder.AddUserSecrets<Program>(optional: true);
                 })
-                .ConfigureServices(services => { services.AddTransient<SwapHunterService>(); })
+                .ConfigureServices(services =>
+                {
+                    services.AddTibbyClient();
+                    services.AddTransient<SwapHunterService>();
+   
+                }).UseSerilog((ctx, lc) => lc
+                    .WriteTo.File("app.log")
+                    .ReadFrom.Configuration(ctx.Configuration))
                 .Build();
             
             var cancelSource = new CancellationTokenSource();
@@ -75,7 +86,6 @@ namespace SwapHunter
                 .ConfigureServices((hostContext, services) =>
                 {
                     var chiaRpcOptions = hostContext.Configuration.GetSection("ChiaRpc").Get<ChiaRpcOptions>();
-                    var tibetSwapOptions = hostContext.Configuration.GetSection("TibetSwap").Get<TibetSwapOptions>();
                     var handler = new SocketsHttpHandler();
                     handler.SslOptions.ClientCertificates =
                         GetCerts(chiaRpcOptions.Wallet_cert_path, chiaRpcOptions.Wallet_key_path);
@@ -86,15 +96,11 @@ namespace SwapHunter
                     {
                         c.BaseAddress = new System.Uri(chiaRpcOptions.WalletRpcEndpoint);
                     }).ConfigurePrimaryHttpMessageHandler(() => { return handler; });
-
-                    services.AddHttpClient<ITibetClient, TibetClient>(c =>
-                    {
-                        c.BaseAddress = new System.Uri(tibetSwapOptions.ApiEndpoint);
-                    });
+                    
 
                     services.AddSingleton<IOfferService, OfferService>();
                     services.AddHostedService<SwapHunterService>();
-                    services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap"));
+                    services.Configure<TibetSwapOptions>(hostContext.Configuration.GetSection("TibetSwap")); 
                     services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
                 });
     }
