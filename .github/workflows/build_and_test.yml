@@ -36,9 +36,10 @@ jobs:
         dotnet-version: 7.0.x
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: src
     - name: Build
       run: dotnet build --no-restore
-
+      working-directory: src
     - name: Chia Init
       run: chia init  
     - name: rename localhost
@@ -74,6 +75,7 @@ jobs:
     #  run: dotnet test --no-build --verbosity normal
     - name: Test with dotnet
       run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+      working-directory: src
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v3
       with:
