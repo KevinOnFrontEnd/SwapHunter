@@ -17,7 +17,7 @@ public class ChiaRpcClientTests  : SwapHunterTestBase
         var offering_xch_in_mojos = ChiaHelper.ConvertToMojos(0.001);
         
         // act
-        var result = await ChiaWalletClient.CreateOffer(assetId, 1500, offering_xch_in_mojos, 1000, true);
+        var result = await ChiaWalletClient.CreateOffer(assetId, 1500, Convert.ToInt64(offering_xch_in_mojos), 1000, true);
         
         // assert
         //Assert.True(result.Success);
@@ -32,7 +32,7 @@ public class ChiaRpcClientTests  : SwapHunterTestBase
         var assetId = "d82dd03f8a9ad2f84353cd953c4de6b21dbaaf7de3ba3f4ddd9abe31ecba80ad"; //hard coded dbx assetid
         
         // act
-        var result = await ChiaWalletClient.CreateOffer(assetId, 150000,offering_xch_in_mojos, 1000, true);
+        var result = await ChiaWalletClient.CreateOffer(assetId, 150000, Convert.ToInt64(offering_xch_in_mojos), 1000, true);
         
         // assert
         Assert.False(result.Success);
@@ -48,7 +48,7 @@ public class ChiaRpcClientTests  : SwapHunterTestBase
         var minFee = ChiaHelper.ConvertToMojos(0.000122973515);
         
         // act
-        var result = await ChiaWalletClient.CreateOffer(assetId, 617,offering_xch_in_mojos, minFee, true);
+        var result = await ChiaWalletClient.CreateOffer(assetId, 617, Convert.ToInt64(offering_xch_in_mojos), Convert.ToInt64(minFee), true);
         
         // assert
         Assert.True(result.Success);
