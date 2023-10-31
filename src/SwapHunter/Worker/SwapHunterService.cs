@@ -29,7 +29,8 @@ namespace SwapHunter.Worker
         private ILogger<SwapHunterService> _logger;
 
         public SwapHunterService(ITibbyClient tibetclient, IOptions<TibetSwapOptions> tibetOptions,
-            IConfiguration config, IChiaRpcClient chiaRpcClient, IOfferService offerService, ILogger<SwapHunterService> logger)
+            IConfiguration config, IChiaRpcClient chiaRpcClient, IOfferService offerService,
+            ILogger<SwapHunterService> logger)
         {
             _tibetClient = tibetclient;
             _tibetOptions = tibetOptions;
@@ -39,78 +40,161 @@ namespace SwapHunter.Worker
             _logger = logger;
         }
 
+        public async Task Snipe()
+        {
+            var assetId = AnsiConsole.Ask<string>("Enter Asset Id:");
+            var swapAmount = AnsiConsole.Ask<double>("Enter an amount to swap:");
+            var swapAmountInMojos = ChiaHelper.ConvertToMojos(swapAmount);
+            Console.WriteLine($"Waiting to Snipe AssetId: {assetId}");
+
+            while (true)
+            {
+                var (tokenPairs, _) = await _tibetClient.GetTokenPairs();
+                var apiPairs = tokenPairs.ToDictionary(x => x.pair_id);
+                var token = tokenPairs.FirstOrDefault(x => x.Asset_id.ToLower().Equals(assetId.ToLower()));
+
+                if (token != null)
+                {
+                    var (quote, _) = await _tibetClient.GetQuote(token.pair_id, swapAmountInMojos);
+                    var tokenOutput = TibbyHelper.GetInputPrice(swapAmountInMojos, quote.input_reserve,
+                        quote.output_reserve);
+                    AnsiConsole.MarkupLine($"Sniping [green]~{tokenOutput / 1000}[/] of {token.short_name} for {swapAmount} xch");
+                    var (_, chiaOfferRpcResponse, tibetOfferResponse) =
+                        await _offerService.CreateOffer(swapAmount, token.Asset_id);
+                    
+                    AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success
+                        ? $"Chia Offer Created: [green]{chiaOfferRpcResponse.Success}[/]"
+                        : $"Chia Offer Created: [red]{chiaOfferRpcResponse.Success}[/]");
+                    AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success
+                        ? $"Offer Posted to TibetSwap Successfully: [green]{tibetOfferResponse.Success}[/]"
+                        : $"Offer Posted to TibetSwap Successfully: [red]{tibetOfferResponse.Success}[/]");
+
+                    if (chiaOfferRpcResponse.Success == true && tibetOfferResponse.Success == true)
+                    {
+                        AnsiConsole.MarkupLine($"[green]Congratulations - you have sniped {tokenOutput / 1000} of assetid: {assetId} - returning to main menu![/]");
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine($"[red]Problem occurred when sniping assetid: {assetId} - Please swap manually![/]");
+                    }
+
+                    return;
+                }
+                
+                Console.WriteLine($"{DateTime.Now} - Fetched {apiPairs.Count} tokens");
+                
+                
+                //delay trying again for 10 minutes
+                await Task.Delay(600000);
+            }
+        }
+
+        public async Task Interactive()
+        {
+            var (tokenPairs, _) = await _tibetClient.GetTokenPairs();
+            var apiPairs = tokenPairs.ToDictionary(x => x.pair_id);
+            var swapChoices = apiPairs.Select(x => x.Value.pair_id).ToList();
+            swapChoices.Add("Exit");
+            var rootCommand = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("What Tokens would you like to [green]SWAP[/]?")
+                    .MoreChoicesText("[grey](Move up and down to reveal more Tokens Pairs)[/]")
+                    .AddChoices(swapChoices)
+                    .UseConverter((i) =>
+                    {
+                        var verifiedWarning = "";
+                        apiPairs.TryGetValue(i, out TokenResponse pair);
+                        if (pair != null)
+                        {
+                            verifiedWarning = pair.verified == true
+                                ? $"[green]{pair.verified}[/]"
+                                : $"[red]{pair.verified}[/]";
+                        }
+
+                        return i switch
+                        {
+                            "Exit" => "Exit",
+                            _ => $"{pair.short_name} - {pair.Asset_id} - verified: {verifiedWarning}"
+                        };
+                    })
+            );
+
+            if (rootCommand == "Exit")
+            {
+                _logger.LogInformation("Exiting");
+                Environment.Exit(1);
+            }
+
+            if (!string.IsNullOrEmpty(rootCommand))
+            {
+                var pair = apiPairs.First(x => x.Value.pair_id == rootCommand);
+                var swapAmount =
+                    AnsiConsole.Ask<double>(
+                        $"What is the amount of $XCH would you like to swap for [green]{pair.Value.short_name}[/]?");
+                var swapAmountInMojos = ChiaHelper.ConvertToMojos(swapAmount);
+                var (quote, _) = await _tibetClient.GetQuote(pair.Value.pair_id, swapAmountInMojos);
+                var tokenOutput = TibbyHelper.GetInputPrice(swapAmountInMojos, quote.input_reserve,
+                    quote.output_reserve);
+                var confirmSwap =
+                    AnsiConsole.Confirm(
+                        $"You would receive ~{tokenOutput / 1000} {pair.Value.short_name} - confirm swap?",
+                        false);
+                if (confirmSwap)
+                {
+                    var (_, chiaOfferRpcResponse, tibetOfferResponse) =
+                        await _offerService.CreateOffer(swapAmount, pair.Value.Asset_id);
+                    AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success
+                        ? $"Chia Offer Created: [green]{chiaOfferRpcResponse.Success}[/]"
+                        : $"Chia Offer Created: [red]{chiaOfferRpcResponse.Success}[/]");
+                    AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success
+                        ? $"Offer Posted to TibetSwap Successfully: [green]{tibetOfferResponse.Success}[/]"
+                        : $"Offer Posted to TibetSwap Successfully: [red]{tibetOfferResponse.Success}[/]");
+                    Console.WriteLine($"Press any key to return to main menu");
+                    Console.ReadKey();
+                }
+            }
+        }
+
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try
             {
-                //known token pairs
-                var knownTokens = await GetLatestTokenPairGistFromGitHub();
-                var knownTokenshs = knownTokens.ToDictionary(x => x.pair_id);
-                var (tokenPairs,_) = await _tibetClient.GetTokenPairs();
-                var apiPairs = tokenPairs.ToDictionary(x => x.pair_id);
-                var swapChoices = apiPairs.Select(x => x.Value.pair_id).ToList();
-                swapChoices.Add("Exit");
+                var swapModes = new List<string>() { "Interactive", "Snipe" };
+                swapModes.Add("Exit");
 
                 // logic that handles accepting user input on what tokens to swap & how much XCH to exchange for it.
                 string rootCommand = "";
                 while (rootCommand != "Exit")
                 {
-                    rootCommand = AnsiConsole.Prompt(
+                    //choose if sniping or using interactive
+                    rootCommand = rootCommand = AnsiConsole.Prompt(
                         new SelectionPrompt<string>()
-                            .Title("What Tokens would you like to [green]SWAP[/]?")
-                            .MoreChoicesText("[grey](Move up and down to reveal more Tokens Pairs)[/]")
-                            .AddChoices(swapChoices)
+                            .Title("Please select Swapping [green]MODE[/]?")
+                            .MoreChoicesText("[grey](Move up and down to reveal more select mode)[/]")
+                            .AddChoices(swapModes)
                             .UseConverter((i) =>
                             {
-                                var verifiedWarning = "";
-                                apiPairs.TryGetValue(i, out TokenResponse pair);
-                                if (pair != null)
-                                {
-                                    verifiedWarning = pair.verified == true
-                                        ? $"[green]{pair.verified}[/]"
-                                        : $"[red]{pair.verified}[/]";
-                                }
                                 return i switch
                                 {
                                     "Exit" => "Exit",
-                                    _ => $"{pair.short_name} - {pair.Asset_id} - verified: {verifiedWarning}"
+                                    _ => $"{i}"
                                 };
                             })
                     );
 
-                    if (rootCommand == "Exit")
+                    if (rootCommand == "Interactive")
+                    {
+                        await Interactive();
+                    }
+                    else if (rootCommand == "Snipe")
+                    {
+                        await Snipe();
+                    }
+                    else if (rootCommand == "Exit")
                     {
                         _logger.LogInformation("Exiting");
                         Environment.Exit(1);
-                    }
-
-                    if (!string.IsNullOrEmpty(rootCommand))
-                    {
-                        var pair = apiPairs.First(x => x.Value.pair_id == rootCommand);
-                        var swapAmount =
-                            AnsiConsole.Ask<double>(
-                                $"What is the amount of $XCH would you like to swap for [green]{pair.Value.short_name}[/]?");
-                        var swapAmountInMojos = ChiaHelper.ConvertToMojos(swapAmount);
-                        var (quote,_) = await _tibetClient.GetQuote(pair.Value.pair_id, swapAmountInMojos);
-                        var tokenOutput = TibbyHelper.GetInputPrice(swapAmountInMojos, quote.input_reserve,
-                            quote.output_reserve);
-                        var confirmSwap =
-                            AnsiConsole.Confirm(
-                                $"You would receive ~{tokenOutput / 1000} {pair.Value.short_name} - confirm swap?",
-                                false);
-                        if (confirmSwap)
-                        {
-                            var (_, chiaOfferRpcResponse, tibetOfferResponse) =
-                                await _offerService.CreateOffer(swapAmount, pair.Value.Asset_id);
-                            AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success
-                                ? $"Chia Offer Created: [green]{chiaOfferRpcResponse.Success}[/]"
-                                : $"Chia Offer Created: [red]{chiaOfferRpcResponse.Success}[/]");
-                            AnsiConsole.MarkupLine(chiaOfferRpcResponse.Success
-                                ? $"Offer Posted to TibetSwap Successfully: [green]{tibetOfferResponse.Success}[/]"
-                                : $"Offer Posted to TibetSwap Successfully: [red]{tibetOfferResponse.Success}[/]");
-                            Console.WriteLine($"Press any key to return to main menu");
-                            Console.ReadKey();
-                        }
                     }
                 }
             }
