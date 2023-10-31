@@ -9,6 +9,6 @@ namespace SwapHunter.Client.Chia
 {
   public interface IChiaRpcClient
   {
-    Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double mojo_amount_offering, double fee, bool validate_only);
+    Task<CreateOfferResponse> CreateOffer(string assetid, Int64 requesting_amount, Int64 mojo_amount_offering, Int64 fee, bool validate_only);
   }
 }

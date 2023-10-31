@@ -53,7 +53,7 @@ public class OfferService : IOfferService
         var donationFee = lowestxchAmount * 0.003; //donationAmount
 
         // create chia offer
-        var chia_offer = await _chiaRpcClient.CreateOffer(assetId, tokenOutput, offering_amount, quote.fee, false);
+        var chia_offer = await _chiaRpcClient.CreateOffer(assetId, Convert.ToInt64(tokenOutput), Convert.ToInt64(offering_amount), Convert.ToInt64(quote.fee), false);
         Debug.Assert(chia_offer.Success == true);
 
         // send generated quote to tibetswap for exchange

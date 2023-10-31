@@ -74,7 +74,13 @@ public class SwapHunterFixture : IDisposable
                     services.Configure<ChiaRpcOptions>(hostContext.Configuration.GetSection("ChiaRpc"));
                 });
                 webHost.UseTestServer();
-                webHost.Configure(app => { app.Run(async ctx => { await ctx.Response.WriteAsync("Hello World!"); }); });
+                webHost.Configure(app =>
+                {
+                    app.Run(async ctx =>
+                    {
+                        await ctx.Response.WriteAsync("Hello World!");
+                    });
+                });
             });
     }
 

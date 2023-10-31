@@ -32,10 +32,10 @@ namespace SwapHunter.Client.Chia
     //get_sync_status
     //add_token
     
-    public async Task<CreateOfferResponse> CreateOffer(string assetid, double requesting_amount, double mojo_amount_offering, double fee, bool validate_only=true)
+    public async Task<CreateOfferResponse> CreateOffer(string assetid, Int64 requesting_amount, Int64 mojo_amount_offering, Int64 fee, bool validate_only=true)
     {
       var obj =  new {
-        offer= new Dictionary<string,double>() {
+        offer= new Dictionary<string,Int64>() {
           { "1", -mojo_amount_offering },
           { assetid, requesting_amount }
         },
