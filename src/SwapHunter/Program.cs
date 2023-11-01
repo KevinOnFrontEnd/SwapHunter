@@ -66,7 +66,10 @@ namespace SwapHunter
             using X509Certificate2 cert = new(certPath);
             using StreamReader streamReader = new(keyPath);
 
-            var base64 = new StringBuilder(streamReader.ReadToEnd())
+
+            var private_key = streamReader.ReadToEnd();
+            bool isPkcsprivateKey = private_key.Contains("BEGIN PRIVATE KEY");
+            var base64 = new StringBuilder(private_key)
                 .Replace("-----BEGIN PRIVATE KEY-----", string.Empty)
                 .Replace("-----END PRIVATE KEY-----", string.Empty)
                 .Replace("-----BEGIN RSA PRIVATE KEY-----", string.Empty)
@@ -75,13 +78,29 @@ namespace SwapHunter
                 .Replace("\r\n", string.Empty)
                 .ToString();
 
-            using var rsa = RSA.Create();
-            rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(base64), out _);
+            if (isPkcsprivateKey)
+            {
+                using (ECDsa key = ECDsa.Create())
+                {
+                    key.ImportPkcs8PrivateKey(Convert.FromBase64String(base64), out _);
 
-            using var certWithKey = cert.CopyWithPrivateKey(rsa);
-            var ephemeralCert = new X509Certificate2(certWithKey.Export(X509ContentType.Pkcs12));
+                    using var certWithKey = cert.CopyWithPrivateKey(key);
+                    var ephemeralCert = new X509Certificate2(certWithKey.Export(X509ContentType.Pkcs12));
+                    return new(ephemeralCert);
+                }
+            }
+            else
+            {
+                using (var rsa = RSA.Create())
+                {
+                    rsa.ImportRSAPrivateKey(Convert.FromBase64String(base64), out _);
+                    using var certWithKey = cert.CopyWithPrivateKey(rsa);
+                    var ephemeralCert = new X509Certificate2(certWithKey.Export(X509ContentType.Pkcs12));
+                    return new(ephemeralCert);
+                }
+            }
+            
 
-            return new(ephemeralCert);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
