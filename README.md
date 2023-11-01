@@ -3,6 +3,12 @@ A Proof of concept console application for sniping new $xch tokens listed on Tib
 
 With the chia ecosystem ramping up now that there is a AMM (TibetSwap), there will be an influx in tokens that are listed on the exchange. This console application is intended to help users find new tokens available to trade as early as possible. 
 
+<img width="822" alt="Screenshot 2023-11-01 at 21 14 06" src="https://github.com/KevinOnFrontEnd/SwapHunter/assets/133973062/f7170085-e321-4a75-9793-ba6d9929c6e1">
+
+<img width="816" alt="Screenshot 2023-11-01 at 21 15 39" src="https://github.com/KevinOnFrontEnd/SwapHunter/assets/133973062/81176573-0f7f-4a03-9d0b-1bb0d288ab0b">
+
+<img width="816" alt="Screenshot 2023-11-01 at 21 17 03" src="https://github.com/KevinOnFrontEnd/SwapHunter/assets/133973062/527b045c-8d4f-4b3e-8086-4e946d76df13">
+
 <img width="690" alt="Screenshot 2023-05-30 at 12 00 42" src="https://github.com/KevinOnFrontEnd/SwapHunter/assets/133973062/c5ab1b37-1bbe-4105-bcae-96c57326b07a">
 
 <img width="468" alt="Screenshot 2023-05-28 at 20 34 41" src="https://github.com/KevinOnFrontEnd/SwapHunter/assets/133973062/83d1bdb7-42b9-4126-a2d0-17bce2c02494">
