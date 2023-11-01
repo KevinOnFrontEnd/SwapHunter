@@ -67,13 +67,16 @@ namespace SwapHunter
             using StreamReader streamReader = new(keyPath);
 
             var base64 = new StringBuilder(streamReader.ReadToEnd())
+                .Replace("-----BEGIN PRIVATE KEY-----", string.Empty)
+                .Replace("-----END PRIVATE KEY-----", string.Empty)
                 .Replace("-----BEGIN RSA PRIVATE KEY-----", string.Empty)
                 .Replace("-----END RSA PRIVATE KEY-----", string.Empty)
                 .Replace(Environment.NewLine, string.Empty)
+                .Replace("\r\n", string.Empty)
                 .ToString();
 
             using var rsa = RSA.Create();
-            rsa.ImportRSAPrivateKey(Convert.FromBase64String(base64), out _);
+            rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(base64), out _);
 
             using var certWithKey = cert.CopyWithPrivateKey(rsa);
             var ephemeralCert = new X509Certificate2(certWithKey.Export(X509ContentType.Pkcs12));
