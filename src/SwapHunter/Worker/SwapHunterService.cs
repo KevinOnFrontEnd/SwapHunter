@@ -40,7 +40,7 @@ namespace SwapHunter.Worker
             _logger = logger;
         }
 
-        public async Task Snipe()
+        private async Task Snipe()
         {
             var assetId = AnsiConsole.Ask<string>("Enter Asset Id:");
             var swapAmount = AnsiConsole.Ask<double>("Enter an amount to swap:");
@@ -80,16 +80,17 @@ namespace SwapHunter.Worker
 
                     return;
                 }
-                
-                Console.WriteLine($"{DateTime.Now} - Fetched {apiPairs.Count} tokens");
-                
+                else
+                {
+                    Console.WriteLine($"{DateTime.Now} - AssetId not found in {apiPairs.Count} tokens - delaying 10 minutes!");
+                }
                 
                 //delay trying again for 10 minutes
                 await Task.Delay(600000);
             }
         }
 
-        public async Task Interactive()
+        private async Task Interactive()
         {
             var (tokenPairs, _) = await _tibetClient.GetTokenPairs();
             var apiPairs = tokenPairs.ToDictionary(x => x.pair_id);
@@ -154,8 +155,7 @@ namespace SwapHunter.Worker
                 }
             }
         }
-
-
+        
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try
@@ -170,7 +170,7 @@ namespace SwapHunter.Worker
                     //choose if sniping or using interactive
                     rootCommand = rootCommand = AnsiConsole.Prompt(
                         new SelectionPrompt<string>()
-                            .Title("Please select Swapping [green]MODE[/]?")
+                            .Title("Select Swapping [green]MODE[/]?")
                             .MoreChoicesText("[grey](Move up and down to reveal more select mode)[/]")
                             .AddChoices(swapModes)
                             .UseConverter((i) =>
@@ -202,23 +202,6 @@ namespace SwapHunter.Worker
             {
                 Console.WriteLine(e.ToString());
             }
-        }
-
-        /// <summary>
-        /// This method fetches the latest gist from github. It is used as the known list of tokens - 
-        /// When there are subsequent tokens found when fetching from tibetswap - then they are new.
-        /// </summary>
-        /// <returns></returns>
-        private async Task<List<TokenResponse>> GetLatestTokenPairGistFromGitHub()
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri("https://gist.githubusercontent.com/");
-            var response = await client.GetAsync(_config["LatestTokenPairGist"]);
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            var obj = JsonObject.Parse(responseBody);
-            var pairs = JArray.Parse(obj.ToString());
-            return pairs.ToObject<List<TokenResponse>>();
         }
     }
 }
